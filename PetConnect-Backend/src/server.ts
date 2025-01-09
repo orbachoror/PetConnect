@@ -1,7 +1,7 @@
 
 import app from './app';
 import connectToDB from './db';
-import logger from './logger';
+import logger from './utils/logger';
 
 const AppInit = async () => {
     const PORT = process.env.PORT;

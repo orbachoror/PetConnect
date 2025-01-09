@@ -12,54 +12,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const body_parser_1 = __importDefault(require("body-parser"));
-const express_1 = __importDefault(require("express"));
-const mongoose_1 = __importDefault(require("mongoose"));
-const dotenv_1 = __importDefault(require("dotenv"));
-const swagger_jsdoc_1 = __importDefault(require("swagger-jsdoc"));
-const swagger_ui_express_1 = __importDefault(require("swagger-ui-express"));
-const app = (0, express_1.default)();
-dotenv_1.default.config();
-app.use(express_1.default.json());
-app.use(body_parser_1.default.json());
-app.use(body_parser_1.default.urlencoded({ extended: true }));
-//************ acces from diffrenet server **************** */
-// app.use((req:Request,res:Response,next)=>{
-//     res.setHeader('Access-Control-Allow-Origin','*');
-//     res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,DELETE');
-//     res.setHeader('Access-Control-Allow-Headers','Content-Type,Authorization');
-// });
-const options = {
-    definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "PetConnect-Backend",
-            version: "1.0.0",
-            description: "REST server including authentication using JWT",
-        },
-        servers: [{ url: "http://localhost:3000/", },],
-    },
-    apis: ["./src/routes/*.ts"],
-};
-const specs = (0, swagger_jsdoc_1.default)(options);
-app.use("/api-docs", swagger_ui_express_1.default.serve, swagger_ui_express_1.default.setup(specs));
+const app_1 = __importDefault(require("./app"));
+const db_1 = __importDefault(require("./db"));
+const logger_1 = __importDefault(require("./utils/logger"));
 const AppInit = () => __awaiter(void 0, void 0, void 0, function* () {
-    const mongoUrl = process.env.MONGO_URL;
     const PORT = process.env.PORT;
-    if (mongoUrl) {
-        try {
-            yield mongoose_1.default.connect(mongoUrl);
-            console.log('Connected to MongoDB');
-            app.listen(PORT, () => {
-                console.log(`Server is running on port ${PORT}`);
-            });
-        }
-        catch (error) {
-            console.log('Server ERROR' + error);
-        }
+    if (!PORT) {
+        logger_1.default.error('PORT not found');
+        return;
     }
-    else {
-        console.log('MongoDB URL not found');
+    yield (0, db_1.default)();
+    try {
+        app_1.default.listen(PORT, () => {
+            logger_1.default.info(`Server is running on port ${PORT}`);
+        });
+    }
+    catch (error) {
+        logger_1.default.error(`Server error: ${error}`);
     }
 });
 AppInit();

@@ -15,7 +15,7 @@ const AppInit = async () => {
             logger.info(`Server is running on port ${PORT}`);
         });
     } catch (error) {
-        logger.error(`Server error: ${error}`);
+        logger.error("Server error: " + error);
     }
 }
 

@@ -94,10 +94,10 @@ const validateRefreshToken = async (refreshToken: string | undefined) => {
     }
     return user;
 }
-const verifyToken = async (refreshToken: string, tokenSecret: string): Promise<TokenPayload> => {
+export const verifyToken = async (token: string, tokenSecret: string): Promise<TokenPayload> => {
 
     return new Promise((resolve, reject) => {
-        jwt.verify(refreshToken, tokenSecret, (err, payload) => {
+        jwt.verify(token, tokenSecret, (err, payload) => {
             if (err) {
                 reject(err);
             }

@@ -28,7 +28,7 @@ const AppInit = () => __awaiter(void 0, void 0, void 0, function* () {
         });
     }
     catch (error) {
-        logger_1.default.error(`Server error: ${error}`);
+        logger_1.default.error("Server error: " + error);
     }
 });
 AppInit();

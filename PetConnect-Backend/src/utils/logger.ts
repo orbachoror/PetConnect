@@ -1,4 +1,4 @@
-const isLoggerEnabled = process.env.LOGGER_ENABLED === 'true';
+const isLoggerEnabled = process.env.LOGGER_ENABLED?.toLocaleLowerCase() === 'true';
 
 const logger = {
     info: (message: string) => {

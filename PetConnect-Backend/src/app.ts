@@ -1,11 +1,12 @@
 import bodyParser from 'body-parser';
 import express from 'express';
 import dotenv from 'dotenv';
+dotenv.config();
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
+import authRoutes from './routes/auth_routes';
 
 const app = express();
-dotenv.config();
 
 app.use(express.json());
 app.use(bodyParser.json());
@@ -13,6 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 /*routes*/
+app.use('/auth', authRoutes);
 
 //************ acces from diffrenet server **************** */
 // app.use((req:Request,res:Response,next)=>{

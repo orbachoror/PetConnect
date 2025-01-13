@@ -1,7 +1,7 @@
 
 import app from './app';
 import connectToDB from './db';
-import logger from './logger';
+import logger from './utils/logger';
 
 const AppInit = async () => {
     const PORT = process.env.PORT;
@@ -15,7 +15,7 @@ const AppInit = async () => {
             logger.info(`Server is running on port ${PORT}`);
         });
     } catch (error) {
-        logger.error(`Server error: ${error}`);
+        logger.error("Server error: " + error);
     }
 }
 

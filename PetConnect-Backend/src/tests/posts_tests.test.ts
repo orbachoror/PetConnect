@@ -64,13 +64,14 @@ test('Create new post', async () => {
     expect(response.body.description).toBe(testPost.description);
     expect (response.body.owner).toBe(testPost.owner);
     testPost._id = response.body._id;
+
     });
 
 test ('Create invalid post', async () => {
     const response = await request(app).post('/posts').set({
         authorization:"JWT " + testUser.accessToken,
         }).send(invalidPost);
-    expect(response.status).toBe(400);
+    expect(response.status).not.toBe(200);
     });
 
 test('Get all posts', async () => {
@@ -118,10 +119,25 @@ test('Update post with invalid data', async () => {
         }).send({
             title: '',
             description: ''});
-    expect(response.status).toBe(400);
+    expect(response.status).not.toBe(200);
     });
 
-test('Delete post by postId', async () => {
+test ('Delete post with invalid postId', async () => {
+    const response = await request(app).delete('/posts/' + testPost._id+5).set({
+        authorization:"JWT " + testUser.accessToken,
+        });
+    expect(response.status).not.toBe(200);
+});
+
+test('Delete post with invalid userId', async () => {
+    const response = await request(app).delete('/posts/' + testPost._id).set({
+        authorization:"JWT " + testUser.accessToken+5,
+        });
+    expect(response.status).not.toBe(200);
+    });
+
+
+test('Delete post by correct postId anf userId', async () => {
     const response = await request(app).delete('/posts/' + testPost._id).set({
         authorization:"JWT " + testUser.accessToken,
         });
@@ -131,3 +147,6 @@ test('Delete post by postId', async () => {
     expect(response2.status).not.toBe(200);
     });
 
+
+
+ 

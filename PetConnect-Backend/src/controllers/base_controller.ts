@@ -1,5 +1,6 @@
 import { Request,Response } from "express";
 import { Model } from "mongoose";
+import baseServices from "../services/base_services";
 
 export class BaseController<T>{
     model: Model<T>;
@@ -13,7 +14,7 @@ export class BaseController<T>{
             const data = await this.model.find(filter as Partial<T>);
             res.status(200).send(data);
         } catch (error) {
-          res.status(400).send(error);
+          res.status(500).send(error);
         }
     };
 
@@ -28,7 +29,7 @@ export class BaseController<T>{
                 res.status(404).send("Not Found");
             }
         }catch(err){
-            res.status(400).send(err);
+            res.status(500).send(err);
         }
     };
 
@@ -41,35 +42,39 @@ export class BaseController<T>{
             });
             res.status(200).send(data);
         }catch(err){
-            res.status(400).send(err);
+            res.status(500).send(err);
         }
     };
 
     async updateIteam (req: Request, res: Response) {
         const id = req.params.id;
         const updateData= req.body;
+        if(!updateData || id === undefined){
+            res.status(400).send("Bad Request");
+            return;
+        }
         try{
-            const data = await this.model.findByIdAndUpdate(id,updateData,{
-                new:true,
-                runValidators:true});
+            const data =await baseServices.updateIteam(this.model,id,updateData);
             if(!data){
                 res.status(404).send("Not Found");
             }
             res.status(200).json(data);
         }catch(err){    
-            res.status(400).json({error:err});
+            res.status(500).json({error:err});
         }
     }
 
     async deleteIteam (req: Request, res: Response) {
         const id = req.params.id;
+        if(id === undefined){
+            res.status(400).send("Bad Request");
+            return;
+        }
         try{
-            const deleteItem = await this.model.deleteOne({_id:id});
-            if(deleteItem.deletedCount === 0)
-                res.status(404).send("Not Found");
+            await baseServices.deleteIteam(this.model,id);
             res.status(200).send("Item Deleted");
         }catch(err){
-            res.status(400).json({error:err});
+            res.status(500).json({error:err});
         }
     }
 

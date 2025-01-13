@@ -16,6 +16,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 /*routes*/
 app.use('/auth', authRoutes);
 
+
 //************ acces from diffrenet server **************** */
 // app.use((req:Request,res:Response,next)=>{
 //     res.setHeader('Access-Control-Allow-Origin','*');

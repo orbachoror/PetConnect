@@ -1,6 +1,7 @@
 import User, { IUser } from '../models/user_model';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+
 interface RegisterUserParams {
     name: string,
     email: string,
@@ -19,6 +20,7 @@ const register = async ({ name, email, password, ...rest }: RegisterUserParams):
     const user = await User.create({ name, email, password: hashedPassword, ...rest });
     return user;
 }
+
 const login = async ({ email, password }: { email: string, password: string }):
     Promise<{ user: IUser, accessToken: string, refreshToken: string }> => {
     const user = await User.findOne({ email: email })
@@ -75,6 +77,7 @@ const generateTokens = async (user: IUser) => {
         { expiresIn: process.env.REFRESH_TOKEN_EXPIRY });
     return { accessToken, refreshToken };
 }
+
 const validateRefreshToken = async (refreshToken: string | undefined) => {
     if (!refreshToken) {
         throw new Error('Refresh token is required');
@@ -94,6 +97,7 @@ const validateRefreshToken = async (refreshToken: string | undefined) => {
     }
     return user;
 }
+
 export const verifyToken = async (token: string, tokenSecret: string): Promise<TokenPayload> => {
 
     return new Promise((resolve, reject) => {

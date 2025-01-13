@@ -5,16 +5,19 @@ dotenv.config();
 import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import authRoutes from './routes/auth_routes';
+import postsRoutes from './routes/posts_routes';
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json()); //************************we can remove this line****************************//
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
 /*routes*/
 app.use('/auth', authRoutes);
+app.use("/posts",postsRoutes);  
+// app.use("/comments",commentsRoutes);
 
 //************ acces from diffrenet server **************** */
 // app.use((req:Request,res:Response,next)=>{

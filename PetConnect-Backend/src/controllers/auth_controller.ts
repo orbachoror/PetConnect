@@ -1,6 +1,8 @@
 import { Request, Response } from 'express';
 import authService from '../services/auth_service';
 import logger from '../utils/logger';
+
+
 const register = async (req: Request, res: Response) => {
     const { name, email, password, ...rest } = req.body
     if (!email || !password || !name) {
@@ -30,6 +32,7 @@ const login = async (req: Request, res: Response) => {
         logger.info('User logged in: ' + user);
         res.status(200).json(
             {
+                email: user.email,
                 message: "User logged in successfully",
                 _id: user._id,
                 accessToken: accessToken,
@@ -51,6 +54,7 @@ const logout = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Error while logging out user: ", error });
     }
 }
+
 const refresh = async (req: Request, res: Response) => {
     try {
         const { accessToken, refreshToken } = await authService.refresh(req.body.refreshToken);

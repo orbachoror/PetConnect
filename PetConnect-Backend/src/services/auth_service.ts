@@ -1,6 +1,7 @@
 import User, { IUser } from '../models/user_model';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+
 interface RegisterUserParams {
     name: string,
     email: string,
@@ -12,6 +13,7 @@ interface RegisterUserParams {
 interface TokenPayload extends JwtPayload {
     _id: string;
     random: string;
+    email: string;
 }
 const register = async ({ name, email, password, ...rest }: RegisterUserParams): Promise<IUser> => {
     const salt = await bcrypt.genSalt(10);
@@ -19,6 +21,7 @@ const register = async ({ name, email, password, ...rest }: RegisterUserParams):
     const user = await User.create({ name, email, password: hashedPassword, ...rest });
     return user;
 }
+
 const login = async ({ email, password }: { email: string, password: string }):
     Promise<{ user: IUser, accessToken: string, refreshToken: string }> => {
     const user = await User.findOne({ email: email })
@@ -66,15 +69,16 @@ const generateTokens = async (user: IUser) => {
     }
     const random = Math.random().toString(36).substring(2);
     const accessToken = jwt.sign(
-        { _id: user._id, random },
+        { _id: user._id, random, email:user.email },
         process.env.TOKEN_SECRET,
         { expiresIn: process.env.ACCESS_TOKEN_EXPIRY });
     const refreshToken = jwt.sign(
-        { _id: user._id, random },
+        { _id: user._id, random,email:user.email },
         process.env.TOKEN_SECRET,
         { expiresIn: process.env.REFRESH_TOKEN_EXPIRY });
     return { accessToken, refreshToken };
 }
+
 const validateRefreshToken = async (refreshToken: string | undefined) => {
     if (!refreshToken) {
         throw new Error('Refresh token is required');
@@ -94,6 +98,7 @@ const validateRefreshToken = async (refreshToken: string | undefined) => {
     }
     return user;
 }
+
 export const verifyToken = async (token: string, tokenSecret: string): Promise<TokenPayload> => {
 
     return new Promise((resolve, reject) => {

@@ -13,6 +13,7 @@ interface RegisterUserParams {
 interface TokenPayload extends JwtPayload {
     _id: string;
     random: string;
+    email: string;
 }
 const register = async ({ name, email, password, ...rest }: RegisterUserParams): Promise<IUser> => {
     const salt = await bcrypt.genSalt(10);
@@ -68,11 +69,11 @@ const generateTokens = async (user: IUser) => {
     }
     const random = Math.random().toString(36).substring(2);
     const accessToken = jwt.sign(
-        { _id: user._id, random },
+        { _id: user._id, random, email:user.email },
         process.env.TOKEN_SECRET,
         { expiresIn: process.env.ACCESS_TOKEN_EXPIRY });
     const refreshToken = jwt.sign(
-        { _id: user._id, random },
+        { _id: user._id, random,email:user.email },
         process.env.TOKEN_SECRET,
         { expiresIn: process.env.REFRESH_TOKEN_EXPIRY });
     return { accessToken, refreshToken };

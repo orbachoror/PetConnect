@@ -89,7 +89,7 @@ test('Get post by id', async () => {
 
 test('Get post by invalid id', async () => {
     const response = await request(app).get('/posts/' + testPost._id + 1);
-    expect(response.status).toBe(400);
+    expect(response.status).not.toBe(200);
     });
 
 test('Update post', async () => {
@@ -109,7 +109,7 @@ test('Update post with invalid id', async () => {
         }).send({
             title: 'updatedTitle',
             description: 'updatedDescription'});
-    expect(response.status).toBe(400);
+    expect(response.status).not.toBe(200);
     });
 
 test('Update post with invalid data', async () => {

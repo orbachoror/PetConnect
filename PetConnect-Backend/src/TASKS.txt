@@ -1,0 +1,9 @@
+ 
+
+ 200+ - success
+ 400+ - error
+ 500+ - catch
+
+divide to services- all the deep access to the mongoose
+
+ownership - implememnt

@@ -82,7 +82,7 @@ test('Get post by id', async () => {
     expect(response.status).toBe(200);
     expect(response.body.title).toBe(testPost.title);
     expect(response.body.description).toBe(testPost.description);
-    expect(response.body.owner).toBe(testPost.owner);
+    expect(response.body.owner._id).toBe(testUser.id);
 });
 
 test('Get post by invalid id', async () => {

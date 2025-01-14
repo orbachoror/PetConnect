@@ -7,9 +7,9 @@
     "dev": "nodemon ./src/server.ts",
     "lint": "eslint . --ext .ts",
     "test": "tsc && jest --detectOpenHandles --forceExit",
-    "testAuth": "tsc && jest --runInBand --forceExit --detectOpenHandles auth_tests.test.ts",
-    "testPosts": "tsc && jest --runInBand --forceExit --detectOpenHandles posts_tests.test.ts"
-
+    "testAuth": "tsc && jest --runInBand --forceExit --detectOpenHandles auth.test.ts",
+    "testPosts": "tsc && jest --runInBand --forceExit --detectOpenHandles posts_tests.test.ts",
+    "testEvents": "tsc && jest --runInBand --forceExit --detectOpenHandles events.test.ts"
   },
   "keywords": [],
   "author": "",

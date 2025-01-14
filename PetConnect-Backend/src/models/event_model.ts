@@ -1,6 +1,7 @@
 import mongoose, { Schema } from "mongoose";
 
 export interface IEvent {
+    owner?: string;
     title: string;
     description: string;
     date: Date;
@@ -9,6 +10,7 @@ export interface IEvent {
 }
 
 const eventSchema: Schema<IEvent> = new mongoose.Schema({
+    owner: { type: String, ref: 'users' },
     title: { type: String, required: true },
     description: { type: String, required: true },
     date: { type: Date, required: true },

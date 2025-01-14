@@ -1,15 +1,18 @@
 import { Request, Response, NextFunction } from 'express'
 import { verifyToken } from '../services/auth_service'
+import logger from '../utils/logger'
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const authHeader = req.headers['authorization']
         const token = authHeader && authHeader.split(' ')[1]
         if (token == null) {
+            logger.error("Unauthorized")
             res.status(400).json({ message: "Unauthorized" })
             return;
         }
         if (!process.env.TOKEN_SECRET) {
+            logger.error("Token secret is not defined")
             res.status(400).json({ message: "Token secret is not defined" })
             return;
         }

@@ -32,7 +32,6 @@ const login = async (req: Request, res: Response) => {
         logger.info('User logged in: ' + user);
         res.status(200).json(
             {
-                email: user.email,
                 message: "User logged in successfully",
                 _id: user._id,
                 accessToken: accessToken,

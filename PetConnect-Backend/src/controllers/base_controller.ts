@@ -38,7 +38,7 @@ export class BaseController<T> {
     };
 
     async createIteam(req: Request, res: Response) {
-        const owner = req.body.owner;
+        const owner = req.query.userId;
         try {
             const data = await this.model.create({
                 ...req.body,

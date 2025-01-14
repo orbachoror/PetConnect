@@ -38,7 +38,6 @@ beforeAll(async () => {
     expect(response2.status).toBe(200);
     testUser.accessToken = response2.body.accessToken;
     testUser.accessToken = response2.body.refreshToken;
-    testEvent.owner = response2.body.email;
 });
 afterAll(async () => {
     logger.info("afterAll");
@@ -51,6 +50,7 @@ test('Create new event', async () => {
         })
         .send(testEvent);
     expect(response.status).toBe(200);
+    testEvent.owner = response.body.owner;
     testEvent._id = response.body._id;
 });
 test('Get all events', async () => {

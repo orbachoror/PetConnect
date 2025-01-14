@@ -8,7 +8,7 @@
     "lint": "eslint . --ext .ts",
     "test": "tsc && jest --detectOpenHandles --forceExit",
     "testAuth": "tsc && jest --runInBand --forceExit --detectOpenHandles auth.test.ts",
-    "testPosts": "tsc && jest --runInBand --forceExit --detectOpenHandles posts_tests.test.ts",
+    "testPosts": "tsc && jest --runInBand --forceExit --detectOpenHandles posts.test.ts",
     "testEvents": "tsc && jest --runInBand --forceExit --detectOpenHandles events.test.ts"
   },
   "keywords": [],

@@ -18,7 +18,6 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
         }
         const payload = await verifyToken(token, process.env.TOKEN_SECRET);
         req.query.userId = payload._id;
-        req.query.email = payload.email;
         next();
     } catch (error) {
         res.status(500).json({ message: "Error while verifying token", error })

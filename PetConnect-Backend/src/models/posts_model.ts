@@ -13,5 +13,5 @@ const postSchema: Schema<IPost> = new mongoose.Schema({
     description: { type: String, required: true },
 });
 
-const Post = mongoose.model<IPost>('Post', postSchema);
+const Post = mongoose.model<IPost>('posts', postSchema);
 export default Post;

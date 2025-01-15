@@ -1,5 +1,6 @@
 import bodyParser from 'body-parser';
 import express from 'express';
+const app = express();
 import dotenv from 'dotenv';
 dotenv.config();
 import swaggerJsDoc from 'swagger-jsdoc';
@@ -7,8 +8,8 @@ import swaggerUI from 'swagger-ui-express';
 import authRoutes from './routes/auth_routes';
 import postsRoutes from './routes/posts_routes';
 import eventsRoutes from './routes/events_routes';
-
-const app = express();
+import commentsRoutes from './routes/comments_routes';
+import swaggerSpecs from './utils/swagger';
 
 app.use(express.json()); //************************we can remove this line****************************//
 app.use(bodyParser.json());
@@ -18,8 +19,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 /*routes*/
 app.use('/auth', authRoutes);
 app.use("/posts", postsRoutes);
-app.use("/events", eventsRoutes)
-// app.use("/comments",commentsRoutes);
+app.use("/events", eventsRoutes);
+app.use("/posts/:postId/comments", commentsRoutes);
 
 
 //************ acces from diffrenet server **************** */
@@ -29,19 +30,7 @@ app.use("/events", eventsRoutes)
 //     res.setHeader('Access-Control-Allow-Headers','Content-Type,Authorization');
 // });
 
-const options = {
-    definition: {
-        openapi: "3.0.0",
-        info: {
-            title: "PetConnect-Backend",
-            version: "1.0.0",
-            description: "REST server including authentication using JWT",
-        },
-        servers: [{ url: "http://localhost:3000/", },],
-    },
-    apis: ["./src/routes/*.ts"],
-};
-const specs = swaggerJsDoc(options);
-app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(specs));
+
+app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpecs));
 
 export default app;

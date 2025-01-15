@@ -11,7 +11,7 @@ export class BaseController<T> {
 
     async getAll(req: Request, res: Response) {
         try {
-            const data =  await baseServices.getAll(this.model, req);
+            const data = await baseServices.getAll(this.model, req);
             logger.info("BaseController Get all data success " + data);
             res.status(200).send(data);
         } catch (error) {
@@ -19,12 +19,12 @@ export class BaseController<T> {
             res.status(500).send(error);
         }
     };
-   
+
 
     async getById(req: Request, res: Response) {
         const id = req.params.id;
         try {
-            const data = await baseServices.getById(this.model,id); 
+            const data = await baseServices.getById(this.model, id);
             if (data) {
                 logger.info("BaseController Get by id success ");
                 res.send(data);
@@ -40,11 +40,11 @@ export class BaseController<T> {
 
     async createItem(req: Request, res: Response) {
         try {
-            const data = await baseServices.createItem(this.model,req);
+            const data = await baseServices.createItem(this.model, req);
             logger.info("BaseController Create Item success");
             res.status(200).send(data);
         } catch (err) {
-            logger.error("BaseController Create Item failed ");
+            logger.error("BaseController Create Item failed " + err);
             res.status(500).send(err);
         }
     };

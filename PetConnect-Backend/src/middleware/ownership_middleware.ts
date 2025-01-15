@@ -16,7 +16,7 @@ export const ownershipMiddleware = (model: Model<AnyExpression>) => {
                 return;
             }
             if (resource.owner != connectedUserId) {
-                logger.error("You cant modify other users resources !" + typeof (resource.owner) + " " + typeof (connectedUserId));
+                logger.error("You cant modify other users resources !");
                 res.status(400).json({ message: "You cant modify other users resources !" });
                 return;
             }

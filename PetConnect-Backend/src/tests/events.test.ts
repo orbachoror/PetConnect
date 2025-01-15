@@ -27,6 +27,13 @@ const testEvent: IEvent = {
     location: "testEventLocation"
 
 }
+const testEvent2: IEvent = {
+    title: "testEventTitle2",
+    description: "testEventDescription",
+    date: new Date("2025-01-16"),
+    location: "testEventLocation"
+
+}
 beforeAll(async () => {
     logger.info("beforeAll");
     await connectToDB();
@@ -105,3 +112,36 @@ test('Delete event', async () => {
     expect(response2.body.length).toBe(0);
 });
 
+test('Create new events after deleted', async () => {
+    const response = await request(app).post('/events')
+        .set({
+            authorization: "JWT " + testUser.accessToken,
+        })
+        .send(testEvent);
+    expect(response.status).toBe(200);
+    testEvent.owner = response.body.owner;
+    testEvent._id = response.body._id;
+    const response2 = await request(app).post('/events')
+        .set({
+            authorization: "JWT " + testUser.accessToken,
+        })
+        .send(testEvent2);
+    expect(response.status).toBe(200);
+    testEvent2.owner = response2.body.owner;
+    testEvent2._id = response2.body._id;
+});
+test('get events after filter', async () => {
+    const response = await request(app).get(`/events?title=${testEvent2.title}`);
+    expect(response.status).toBe(200);
+    expect(response.body.length).toBe(1);
+    expect(response.body[0].title).toBe(testEvent2.title);
+    const response2 = await request(app).get(`/events?date=${testEvent2.date.toISOString()}`);
+    logger.info("tests event2 " + testEvent2.date.toISOString());
+    logger.info("tests event response " + response2.body[0].date);
+    expect(response2.status).toBe(200);
+    expect(response2.body.length).toBe(1);
+    expect(response2.body[0].date).toBe(testEvent2.date.toISOString());
+    const response3 = await request(app).get(`/events?location=${testEvent2.location}`);
+    expect(response3.status).toBe(200);
+    expect(response3.body.length).toBe(2);
+});

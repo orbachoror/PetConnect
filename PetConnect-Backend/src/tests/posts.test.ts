@@ -1,18 +1,12 @@
 import request from "supertest";
 import app from '../app';
 import connectToDB from '../db';
-import Post from '../models/posts_model';
+import Post, { IPost } from '../models/posts_model';
 import User from '../models/user_model';
 import mongoose from 'mongoose';
 import logger from '../utils/logger';
 
 
-interface Post {
-    owner?: string,
-    title: string,
-    description: string,
-    _id?: string
-}
 
 const testUser = {
     name: "testUser",
@@ -22,12 +16,12 @@ const testUser = {
     id: ""
 }
 
-const testPost: Post = {
+const testPost: IPost = {
     title: 'testTitle',
     description: 'testDescription'
 }
 
-const invalidPost: Post = {
+const invalidPost: IPost = {
     title: 'testInvalidTitle',
     description: '',
 }

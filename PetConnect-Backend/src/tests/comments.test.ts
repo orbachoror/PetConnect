@@ -6,7 +6,6 @@ import Comment, { IComment } from '../models/comment_model';
 import Post, { IPost } from '../models/posts_model';
 import mongoose from 'mongoose';
 import logger from '../utils/logger';
-import exp from "constants";
 
 interface UserInfo {
     name: string,

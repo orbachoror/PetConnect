@@ -1,14 +1,12 @@
 import PostModel,{IPost} from "../models/posts_model";
-// import createController  from "./base_controller";
 import { Request, Response} from 'express';
 import logger from '../utils/logger';
 import { BaseController } from './base_controller'
-
-// const postsController = createController<IPost>(PostModel);
+const populateOptions = { path: 'owner', select: 'email' }
 
 class PostsController extends BaseController<IPost> {
     constructor() {
-        super(PostModel);
+        super(PostModel,populateOptions);
     }
 
     async toggleLike(req: Request , res: Response): Promise<void> {

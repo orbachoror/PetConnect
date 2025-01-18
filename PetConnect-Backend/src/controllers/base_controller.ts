@@ -5,13 +5,15 @@ import logger from "../utils/logger";
 
 export class BaseController<T> {
     model: Model<T>;
-    constructor(model: Model<T>) {
+    populateOptions?: { path: string, select: string }
+    constructor(model: Model<T>, populateOptions?: { path: string, select: string }) {
         this.model = model;
+        this.populateOptions = populateOptions;
     }
 
-    async getAll(req: Request, res: Response) {
+    async getAll(req: Request, res: Response,) {
         try {
-            const data = await baseServices.getAll(this.model, req);
+            const data = await baseServices.getAll(this.model, req, this.populateOptions);
             logger.info("BaseController Get all data success " + data);
             res.status(200).send(data);
         } catch (error) {
@@ -22,18 +24,18 @@ export class BaseController<T> {
 
 
     async getById(req: Request, res: Response) {
-        const id = req.params.id;
+        const id = req.query.userId || req.params.id;
         try {
-            const data = await baseServices.getById(this.model, id);
+            const data = await baseServices.getById(this.model, id?.toString(), this.populateOptions);
             if (data) {
-                logger.info("BaseController Get by id success ");
+                logger.info("BaseController Get by id success " + data);
                 res.send(data);
             } else {
                 logger.error("BaseController Get by id failed ");
                 res.status(404).send("Not Found");
             }
         } catch (err) {
-            logger.error("BaseController Get by id failed ");
+            logger.error("BaseController Get by id failed " + err);
             res.status(500).send(err);
         }
     };
@@ -58,7 +60,7 @@ export class BaseController<T> {
             return;
         }
         try {
-            const data = await baseServices.updateItem(this.model, id, updateData);
+            const data = await baseServices.updateItem(this.model, id?.toString(), updateData);
             if (!data) {
                 res.status(404).send("Not Found");
             }
@@ -87,7 +89,8 @@ export class BaseController<T> {
 };
 
 const createController =
-    <T>(model: Model<T>) => {
-        return new BaseController(model);
+    <T>(model: Model<T>, populateOptions?: { path: string, select: string }
+    ) => {
+        return new BaseController(model, populateOptions);
     }
 export default createController;

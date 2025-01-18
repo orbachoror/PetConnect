@@ -10,7 +10,9 @@
     "testAuth": "tsc && jest --runInBand --forceExit --detectOpenHandles auth.test.ts",
     "testPosts": "tsc && jest --runInBand --forceExit --detectOpenHandles posts.test.ts",
     "testEvents": "tsc && jest --runInBand --forceExit --detectOpenHandles events.test.ts",
-    "testComments": "tsc && jest --runInBand --forceExit --detectOpenHandles comments.test.ts"
+    "testComments": "tsc && jest --runInBand --forceExit --detectOpenHandles comments.test.ts",
+    "testUsers": "tsc && jest --runInBand --forceExit --detectOpenHandles users.test.ts"
+
   },
   "keywords": [],
   "author": "",
@@ -19,6 +21,7 @@
   "dependencies": {
     "bcrypt": "^5.1.1",
     "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
@@ -28,6 +31,7 @@
     "@eslint/js": "^9.17.0",
     "@types/bcrypt": "^5.0.2",
     "@types/body-parser": "^1.19.5",
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
     "@types/jsonwebtoken": "^9.0.7",

@@ -3,12 +3,14 @@ import User, { IUser } from "../models/user_model";
 import { Request, Response } from "express";
 import base_services from "../services/base_services";
 
+const userUploadPath = 'uploads/users_pictures/';
 
 class UsersController extends BaseController<IUser> {
     constructor() {
         super(User)
     }
     async updateItem(req: Request, res: Response): Promise<void> {
+        req.body.profilePicture = req.file ? `${userUploadPath}${req.file.filename}` : null;
         const id = req.query.userId;
         const updateData = req.body;
         if (!updateData || !id) {

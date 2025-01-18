@@ -2,7 +2,7 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { Request } from 'express';
-import { FileFilterCallback } from 'multer';
+import logger from '../utils/logger';
 export const createUploadMiddleware = (type: string) => {
     const storage = multer.diskStorage({
         destination: function (req, file, cb) {
@@ -18,11 +18,13 @@ export const createUploadMiddleware = (type: string) => {
         }
     })
 
-    const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+    const fileFilter = (req: Request, file: Express.Multer.File, cb: any) => {
         if (file.mimetype.startsWith('image/')) {
+            logger.info("Image file uploaded");
             cb(null, true);
         } else {
-            cb(null, false);
+            logger.error("Only image files are allowed");
+            cb(new Error("Only image files are allowed"), false);
         }
     };
 

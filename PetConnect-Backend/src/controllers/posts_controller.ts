@@ -1,19 +1,29 @@
-import PostModel,{IPost} from "../models/posts_model";
-import { Request, Response} from 'express';
+import PostModel, { IPost } from "../models/posts_model";
+import { Request, Response } from 'express';
 import logger from '../utils/logger';
 import { BaseController } from './base_controller'
-const populateOptions = { path: 'owner', select: 'email' }
 
+const populateOptions = { path: 'owner', select: 'email' }
+const postsUploadPath = 'uploads/posts_pictures/';
 class PostsController extends BaseController<IPost> {
     constructor() {
-        super(PostModel,populateOptions);
+        super(PostModel, populateOptions);
     }
 
-    async toggleLike(req: Request , res: Response): Promise<void> {
+    async createItem(req: Request, res: Response): Promise<void> {
+        req.body.postPicture = req.file ? `${postsUploadPath}${req.file.filename}` : null;
+        await super.createItem(req, res);
+    };
+    async updateItem(req: Request, res: Response): Promise<void> {
+        req.body.postPicture = req.file ? `${postsUploadPath}${req.file.filename}` : null;
+        await super.updateItem(req, res);
+    }
+
+    async toggleLike(req: Request, res: Response): Promise<void> {
         const postId = req.params.postId;
         const userId = req.query.userId?.toString();
-        
-        if(!userId){
+
+        if (!userId) {
             logger.error("User not found");
             throw new Error("User not found");
         }

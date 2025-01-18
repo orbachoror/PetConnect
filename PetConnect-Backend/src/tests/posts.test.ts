@@ -5,6 +5,7 @@ import Post, { IPost } from '../models/posts_model';
 import User from '../models/user_model';
 import mongoose from 'mongoose';
 import logger from '../utils/logger';
+import path from "path";
 
 
 
@@ -29,14 +30,19 @@ const testPost: IPost = {
     likes: 0,
     likedBy: []
 }
-
+const testPost2: IPost = {
+    title: 'testTitle2',
+    description: 'testDescription2',
+    likes: 0,
+    likedBy: []
+}
 const invalidPost: IPost = {
     title: 'testInvalidTitle',
     description: '',
     likes: 0,
     likedBy: []
 }
-
+const imagePath = path.join(__dirname, 'test_image.png')
 beforeAll(async () => {
     logger.info("beforeAll");
     await connectToDB();
@@ -55,7 +61,7 @@ afterAll(async () => {
     mongoose.connection.close();
 });
 
-test('Create new post', async () => {
+test('Create new post without image', async () => {
     const response = await request(app).post('/posts')
         .set({
             authorization: "JWT " + testUser.accessToken,
@@ -69,6 +75,29 @@ test('Create new post', async () => {
     testPost.owner = response.body.owner;
 });
 
+test('Create new post with image', async () => {
+    logger.info("image path is " + imagePath);
+    const response = await request(app).post('/posts')
+        .set({
+            authorization: "JWT " + testUser.accessToken,
+        })
+        .field({ 'title': 'testTitle2' })
+        .field({ 'description': 'testDescription2' })
+        .attach('image', imagePath);
+    expect(response.status).toBe(200);
+    expect(response.body.title).toBe('testTitle2');
+    expect(response.body.description).toBe('testDescription2');
+    expect(response.body.owner).toBe(testUser.id);
+    expect(response.body.postPicture).toBeDefined();
+    expect(response.body.postPicture).toContain('uploads/posts_pictures/');
+    testPost2._id = response.body._id;
+    testPost2.owner = response.body.owner;
+    testPost2.postPicture = response.body.postPicture;
+    testPost2.title = response.body.title;
+    testPost2.description = response.body.description;
+
+
+});
 test('Create invalid post', async () => {
     const response = await request(app).post('/posts').set({
         authorization: "JWT " + testUser.accessToken,
@@ -79,7 +108,7 @@ test('Create invalid post', async () => {
 test('Get all posts', async () => {
     const response = await request(app).get('/posts');
     expect(response.status).toBe(200);
-    expect(response.body.length).toBe(1);
+    expect(response.body.length).toBe(2);
 });
 
 test('Get post by id', async () => {
@@ -95,16 +124,27 @@ test('Get post by invalid id', async () => {
     expect(response.status).not.toBe(200);
 });
 
-test('Update post', async () => {
+test('Update post with include image', async () => {
     const response = await request(app).put('/posts/' + testPost._id).set({
         authorization: "JWT " + testUser.accessToken,
-    }).send({
-        title: 'updatedTitle',
-        description: 'updatedDescription'
-    });
+    }).field({ 'title': 'updatedTitle', })
+        .attach('image', imagePath);
     expect(response.status).toBe(200);
     expect(response.body.title).toBe('updatedTitle');
-    expect(response.body.description).toBe('updatedDescription');
+    expect(response.body.postPicture).toBeDefined();
+    expect(response.body.postPicture).toContain('uploads/posts_pictures/');
+    testPost.title = response.body.title;
+    testPost.postPicture = response.body.postPicture;
+});
+
+test('Get posts pictures ', async () => {
+    const response = await request(app).get(`/${testPost.postPicture}`);
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toMatch(/^image\//);
+
+    const response2 = await request(app).get(`/${testPost2.postPicture}`);
+    expect(response2.status).toBe(200);
+    expect(response2.headers['content-type']).toMatch(/^image\//);
 });
 
 test('Update post with invalid id', async () => {
@@ -134,32 +174,32 @@ test('Update post with invalid data', async () => {
 
 test('Like to post', async () => {
     const response = await request(app)
-    .put(`/posts/${testPost._id}/like`)
-    .set({authorization: "JWT " + testUser.accessToken})
+        .put(`/posts/${testPost._id}/like`)
+        .set({ authorization: "JWT " + testUser.accessToken })
     expect(response.status).toBe(200);
     expect(response.body.likes).toBe(1);
 });
 
 test('Unlike to post', async () => {
     const response = await request(app)
-    .put(`/posts/${testPost._id}/like`)
-    .set({authorization: "JWT " + testUser.accessToken})
+        .put(`/posts/${testPost._id}/like`)
+        .set({ authorization: "JWT " + testUser.accessToken })
     expect(response.status).toBe(200);
     expect(response.body.likes).toBe(0);
 });
 
-test ('Like to post with invalid postId', async () => {
-    const postId= testUser.id;
+test('Like to post with invalid postId', async () => {
+    const postId = testUser.id;
     const response = await request(app)
-    .put('/posts/'+  postId + '/like')
-    .set({authorization: "JWT " + testUser.accessToken})
+        .put('/posts/' + postId + '/like')
+        .set({ authorization: "JWT " + testUser.accessToken })
     expect(response.status).not.toBe(200);
 });
 
 test('Like to post with two different users', async () => {
     const response = await request(app)
-    .put(`/posts/${testPost._id}/like`)
-    .set({authorization: "JWT " + testUser.accessToken})
+        .put(`/posts/${testPost._id}/like`)
+        .set({ authorization: "JWT " + testUser.accessToken })
 
     expect(response.status).toBe(200);
     expect(response.body.likes).toBe(1);
@@ -173,8 +213,8 @@ test('Like to post with two different users', async () => {
     testUser2.accessToken = response4.body.accessToken;
 
     const response5 = await request(app)
-    .put(`/posts/${testPost._id}/like`)
-    .set({authorization: "JWT " + testUser2.accessToken})
+        .put(`/posts/${testPost._id}/like`)
+        .set({ authorization: "JWT " + testUser2.accessToken })
     expect(response5.status).toBe(200);
     expect(response5.body.likes).toBe(2);
 });

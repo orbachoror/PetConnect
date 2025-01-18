@@ -1,9 +1,10 @@
 import { AnyExpression, Model } from "mongoose";
 import { Request } from "express";
 
-const getAll = async <T>(model: Model<T>, req: Request) => {
+const getAll = async <T>(model: Model<T>, req: Request, populateOptions?: { path: string, select: string }) => {
     const filter = { ...req.query };
-    const data = await model.find(filter as Partial<T>).populate('owner', 'email');
+    const data = populateOptions ? await model.find(filter as Partial<T>).populate(populateOptions) :
+        await model.find(filter as Partial<T>);
     if (!data) {
         throw new Error('The Item Not Found');
     }
@@ -11,10 +12,12 @@ const getAll = async <T>(model: Model<T>, req: Request) => {
 };
 
 
-const getById = async <T>(model: Model<T>, id: string) => {
-    const data = await model.findById(id).populate('owner', 'email');
+const getById = async <T>(model: Model<T>, id: string, populateOptions?: { path: string, select: string }) => {
+
+    const data = populateOptions ? await model.findById(id).populate(populateOptions) :
+        await model.findById(id);
     if (!data) {
-        throw new Error('The Item Not Found');
+        throw new Error(`The item Not Found`);
     }
     return data;
 }

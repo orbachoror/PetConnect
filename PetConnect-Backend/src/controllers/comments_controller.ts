@@ -5,9 +5,11 @@ import logger from '../utils/logger';
 import base_services from '../services/base_services';
 import Post from '../models/posts_model';
 
+const populateOptions = { path: 'owner', select: 'email' }
+
 class CommentsController extends BaseController<IComment> {
     constructor() {
-        super(Comment);
+        super(Comment, populateOptions);
     }
     async createItem(req: Request, res: Response): Promise<void> {
         try {
@@ -70,6 +72,5 @@ class CommentsController extends BaseController<IComment> {
     }
 }
 
-const commentsController = new CommentsController();
 
-export default commentsController;
+export default new CommentsController();

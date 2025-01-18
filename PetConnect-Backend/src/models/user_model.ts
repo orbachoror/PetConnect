@@ -1,4 +1,4 @@
-import mongoose, {Schema} from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 export interface IUser {
     name: string;
@@ -7,6 +7,7 @@ export interface IUser {
     phone?: string;
     address?: string;
     dateOfBirth?: Date;
+    profilePicture?: string;
     refreshTokens?: string[];
     _id?: mongoose.Types.ObjectId;
 }
@@ -18,6 +19,7 @@ const userSchema: Schema<IUser> = new mongoose.Schema({
     phone: { type: String, trim: true, default: null },
     address: { type: String, default: null },
     dateOfBirth: { type: Date, default: null },
+    profilePicture: { type: String, default: null },
     refreshTokens: { type: [String], default: [] }
 });
 

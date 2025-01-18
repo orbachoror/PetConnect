@@ -1,15 +1,15 @@
 import mongoose, { Schema } from "mongoose";
 
 export interface IComment {
-    owner?: mongoose.Types.ObjectId;
-    postId?: mongoose.Types.ObjectId;
+    owner?: Schema.Types.ObjectId;
+    postId?: Schema.Types.ObjectId;
     content: string;
     _id?: mongoose.Types.ObjectId;
 }
 
 const commentSchema: Schema<IComment> = new mongoose.Schema({
-    owner: { type: mongoose.Types.ObjectId, ref: 'users', required: true },
-    postId: { type: mongoose.Types.ObjectId, ref: 'posts', required: true },
+    owner: { type: Schema.Types.ObjectId, ref: 'users', required: true },
+    postId: { type: Schema.Types.ObjectId, ref: 'posts', required: true },
     content: { type: String, required: true }
 });
 

@@ -16,14 +16,25 @@ const testUser = {
     id: ""
 }
 
+const testUser2 = {
+    name: "testUser2",
+    email: "test@user.com2",
+    password: "1234562",
+    accessToken: "",
+    id: ""
+}
 const testPost: IPost = {
     title: 'testTitle',
-    description: 'testDescription'
+    description: 'testDescription',
+    likes: 0,
+    likedBy: []
 }
 
 const invalidPost: IPost = {
     title: 'testInvalidTitle',
     description: '',
+    likes: 0,
+    likedBy: []
 }
 
 beforeAll(async () => {
@@ -116,6 +127,77 @@ test('Update post with invalid data', async () => {
     expect(response.status).not.toBe(200);
 });
 
+
+/*--------------------------------
+        Tests for likes
+----------------------------------*/
+
+test('Like to post', async () => {
+    const response = await request(app)
+    .put(`/posts/${testPost._id}/like`)
+    .set({authorization: "JWT " + testUser.accessToken})
+    .send({
+        postId: testPost._id,
+    });
+    expect(response.status).toBe(200);
+    expect(response.body.likes).toBe(1);
+});
+
+test('Unlike to post', async () => {
+    const response = await request(app)
+    .put(`/posts/${testPost._id}/like`)
+    .set({authorization: "JWT " + testUser.accessToken})
+    .send({
+        postId: testPost._id,
+    });
+    expect(response.status).toBe(200);
+    expect(response.body.likes).toBe(0);
+});
+
+test ('Like to post with invalid postId', async () => {
+    const postId= testUser.id;
+    const response = await request(app)
+    .put('/posts/'+  postId + '/like')
+    .set({authorization: "JWT " + testUser.accessToken})
+    .send({
+        postId: postId,
+    });
+    expect(response.status).not.toBe(200);
+});
+
+test('Like to post with two different users', async () => {
+    const response = await request(app)
+    .put(`/posts/${testPost._id}/like`)
+    .set({authorization: "JWT " + testUser.accessToken})
+    .send({
+        postId: testPost._id,
+    });
+    expect(response.status).toBe(200);
+    expect(response.body.likes).toBe(1);
+
+    const response3 = await request(app).post('/auth/register').send(testUser2);
+    expect(response3.status).toBe(200);
+    const response4 = await request(app).post('/auth/login').send(testUser2);
+    expect(response4.status).toBe(200);
+
+    testUser2.id = response4.body._id;
+    testUser2.accessToken = response4.body.accessToken;
+
+    const response5 = await request(app)
+    .put(`/posts/${testPost._id}/like`)
+    .set({authorization: "JWT " + testUser2.accessToken})
+    .send({
+        postId: testPost._id,
+    });
+    expect(response5.status).toBe(200);
+    expect(response5.body.likes).toBe(2);
+});
+
+/*--------------------------------
+        End of tests for likes
+----------------------------------*/
+
+
 test('Delete post with invalid postId', async () => {
     const response = await request(app).delete('/posts/' + testPost._id + 5).set({
         authorization: "JWT " + testUser.accessToken,
@@ -140,6 +222,4 @@ test('Delete post by correct postId anf userId', async () => {
     const response2 = await request(app).get('/posts/' + testPost._id);
     expect(response2.status).not.toBe(200);
 });
-
-
 

@@ -3,7 +3,7 @@ import express from 'express';
 const app = express();
 import dotenv from 'dotenv';
 dotenv.config();
-import swaggerJsDoc from 'swagger-jsdoc';
+// import swaggerJsDoc from 'swagger-jsdoc';
 import swaggerUI from 'swagger-ui-express';
 import authRoutes from './routes/auth_routes';
 import postsRoutes from './routes/posts_routes';
@@ -19,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 /*routes*/
 app.use('/auth', authRoutes);
 app.use("/posts", postsRoutes);
+app.use("/posts/:postId/like", postsRoutes);
 app.use("/events", eventsRoutes);
 app.use("/posts/:postId/comments", commentsRoutes);
 

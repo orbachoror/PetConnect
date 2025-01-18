@@ -27,10 +27,13 @@ const testUser2: UserInfo = {
 }
 const testPost: IPost = {
     title: 'testTitle',
-    description: 'testDescription'
+    description: 'testDescription',
+    likes: 0,
+    likedBy: []
 }
 const testComment: IComment = {
     content: 'testContent',
+
 }
 const invalidComment: IComment = {
     content: '',
@@ -163,3 +166,5 @@ test('Delete comment that already deleted', async () => {
         .set({ authorization: "JWT " + testUser.accessToken });
     expect(response.status).not.toBe(200);
 });
+
+

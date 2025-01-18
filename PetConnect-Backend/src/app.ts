@@ -21,6 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 /*routes*/
 app.use('/auth', authRoutes);
 app.use("/posts", postsRoutes);
+app.use("/posts/:postId/like", postsRoutes);
 app.use("/events", eventsRoutes);
 app.use("/posts/:postId/comments", commentsRoutes);
 app.use("/user/", usersRoutes);

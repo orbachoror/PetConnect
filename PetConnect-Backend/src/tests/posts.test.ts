@@ -136,9 +136,6 @@ test('Like to post', async () => {
     const response = await request(app)
     .put(`/posts/${testPost._id}/like`)
     .set({authorization: "JWT " + testUser.accessToken})
-    .send({
-        postId: testPost._id,
-    });
     expect(response.status).toBe(200);
     expect(response.body.likes).toBe(1);
 });
@@ -147,9 +144,6 @@ test('Unlike to post', async () => {
     const response = await request(app)
     .put(`/posts/${testPost._id}/like`)
     .set({authorization: "JWT " + testUser.accessToken})
-    .send({
-        postId: testPost._id,
-    });
     expect(response.status).toBe(200);
     expect(response.body.likes).toBe(0);
 });
@@ -159,9 +153,6 @@ test ('Like to post with invalid postId', async () => {
     const response = await request(app)
     .put('/posts/'+  postId + '/like')
     .set({authorization: "JWT " + testUser.accessToken})
-    .send({
-        postId: postId,
-    });
     expect(response.status).not.toBe(200);
 });
 
@@ -169,9 +160,7 @@ test('Like to post with two different users', async () => {
     const response = await request(app)
     .put(`/posts/${testPost._id}/like`)
     .set({authorization: "JWT " + testUser.accessToken})
-    .send({
-        postId: testPost._id,
-    });
+
     expect(response.status).toBe(200);
     expect(response.body.likes).toBe(1);
 
@@ -186,9 +175,6 @@ test('Like to post with two different users', async () => {
     const response5 = await request(app)
     .put(`/posts/${testPost._id}/like`)
     .set({authorization: "JWT " + testUser2.accessToken})
-    .send({
-        postId: testPost._id,
-    });
     expect(response5.status).toBe(200);
     expect(response5.body.likes).toBe(2);
 });

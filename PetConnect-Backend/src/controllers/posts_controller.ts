@@ -10,11 +10,9 @@ class PostsController extends BaseController<IPost> {
     }
 
     async toggleLike(req: Request , res: Response): Promise<void> {
-        const postId = req.body.postId;
+        const postId = req.params.postId;
         const userId = req.query.userId?.toString();
-        console.log("userId             toggle",userId);
-        console.log("postId             toggle",postId);
-
+        
         if(!userId){
             logger.error("User not found");
             throw new Error("User not found");

@@ -45,6 +45,9 @@ export default router;
  *         dateOfBirth:
  *           type: string
  *           description: The user's date of birth
+ *         profilePicture:
+ *          type: string
+ *          description: The user's profile picture
  *         refreshTokens:
  *           type: string
  *           description: The user's refresh tokens

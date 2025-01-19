@@ -95,9 +95,8 @@ test('Create new post with image', async () => {
     testPost2.postPicture = response.body.postPicture;
     testPost2.title = response.body.title;
     testPost2.description = response.body.description;
-
-
 });
+
 test('Create invalid post', async () => {
     const response = await request(app).post('/posts').set({
         authorization: "JWT " + testUser.accessToken,

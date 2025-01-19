@@ -4,7 +4,6 @@ import { authMiddleware } from '../middleware/auth_middleware';
 import { ownershipMiddleware } from '../middleware/ownership_middleware';
 import { createUploadMiddleware } from '../middleware/image_upload_middleware';
 import Post from '../models/posts_model';
-
 const router = express.Router();
 
 router.get("/", postsController.getAll.bind(postsController));
@@ -44,16 +43,23 @@ export default router;
  *         description:
  *           type: string
  *           description: The content or description of the post
+ *         postPicture:
+ *          type: string
+ *          format: binary
+ *          description: The post picture
  *         likes:
  *           type: number
  *           description: The number of likes the post has received
+ *           default: 0
+ *           readOnly: true
  *         likedBy:
  *           type: array
  *           items:
  *             type: string
  *           description: List of user IDs who liked the post
+ *           default: []
+ *           readOnly: true      
  */
-
 /**************************************Get all posts*******************************************/
 /**
  * @swagger
@@ -114,31 +120,14 @@ export default router;
  *     requestBody:
  *       required: true
  *       content:
- *         application/json:
+ *          application/json:
  *           schema:
- *             type: object
- *             properties:
- *               owner:
- *                 type: string
- *                 description: The owner of the post (User ID)
- *               title:
- *                 type: string
- *                 description: The title of the post
- *               description:
- *                 type: string 
- *                 description: The content or description of the post
- *               likes:
- *                 type: number
- *                 description: The number of likes the post has received
- *               likedBy:
- *                 type: array
- *                 description: List of user IDs who liked the post
+ *             $ref: '#/components/schemas/Post'
  *           example:
  *             owner: "orbach"
  *             title: "Post Title"
  *             description: "This is a post!"
- *             likes: 0
- *             likedBy: []
+ *             postPicture: "../tests/test_image.png"
  *     responses:
  *       200:
  *         description: Post successfully created
@@ -151,7 +140,6 @@ export default router;
  *       500:
  *         description: Internal server error
  */
-
 /**************************************Update post*******************************************/
 /**
  * @swagger

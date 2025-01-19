@@ -4,6 +4,8 @@ import connectToDB from '../db';
 import User from '../models/user_model';
 import mongoose from 'mongoose';
 import logger from '../utils/logger';
+import path from 'path';
+import fs from 'fs';
 
 interface UserInfo {
     name: string,
@@ -11,7 +13,8 @@ interface UserInfo {
     password: string,
     accessToken?: string,
     refreshToken?: string,
-    _id?: string
+    _id?: string,
+    profilePicture?: string
 }
 const testUser: UserInfo = {
     name: 'testName',
@@ -19,8 +22,31 @@ const testUser: UserInfo = {
     password: 'testPassword',
 }
 
+const imagePath = path.join(__dirname, 'test_image.png')
+const uploadsDir = path.join(__dirname, '../uploads');
+
+
 beforeAll(async () => {
     logger.info("beforeAll");
+    logger.info('Cleaning up uploads directory...');
+    if (fs.existsSync(uploadsDir)) {
+        // Read all files and folders inside the uploads directory
+        const files = fs.readdirSync(uploadsDir);
+        files.forEach((file) => {
+            const filePath = path.join(uploadsDir, file);
+            if (fs.lstatSync(filePath).isDirectory()) {
+                // Recursively delete subdirectory
+                fs.rmdirSync(filePath, { recursive: true });
+            } else {
+                // Delete file
+                fs.unlinkSync(filePath);
+            }
+        });
+        logger.info('Uploads directory cleaned.');
+    } else {
+        logger.info('Uploads directory does not exist, skipping cleanup.');
+    }
+
     await connectToDB();
     await User.deleteMany({});
     const response = await request(app).post('/auth/register').send(testUser);
@@ -48,15 +74,51 @@ test('get user info', async () => {
     expect(response.body.email).toBe(testUser.email);
     expect(response.body._id).toBe(testUser._id);
 });
-test('update user info', async () => {
+test('update user info with image png file', async () => {
     const response = await request(app)
         .put('/user')
         .set({
             authorization: "JWT " + testUser.accessToken,
         })
-        .send({ name: 'newName' });
+        .field({ 'name': 'newName' }).attach('image', imagePath);
     expect(response.status).toBe(200);
     expect(response.body.name).toBe('newName');
+    expect(response.body.profilePicture).toBeDefined();
+    expect(response.body.profilePicture).toContain('uploads/users_pictures/');
+    testUser.profilePicture = response.body.profilePicture;
+});
+test('upload file that not image type fail', async () => {
+    const response = await request(app)
+        .put('/user')
+        .set({
+            authorization: "JWT " + testUser.accessToken,
+        })
+        .attach('image', path.join(__dirname, 'test_file.txt'));
+    expect(response.status).not.toBe(200);
+});
+test('upload another image but jpg type file', async () => {
+    const response = await request(app)
+        .put('/user')
+        .set({
+            authorization: "JWT " + testUser.accessToken,
+        })
+        .attach('image', path.join(__dirname, 'test_image2.jpg'));
+    expect(response.status).toBe(200);
+});
+test('update user info without image', async () => {
+    const response = await request(app)
+        .put('/user')
+        .set({
+            authorization: "JWT " + testUser.accessToken,
+        }).send({ name: 'newName' });
+    expect(response.status).toBe(200);
+    expect(response.body.name).toBe('newName');
+});
+test('get user profile picture', async () => {
+    logger.info("test user profile picture path = " + testUser.profilePicture);
+    const response = await request(app).get(`/${testUser.profilePicture}`);
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toMatch(/^image\//);
 });
 
 test('get user after logout', async () => {

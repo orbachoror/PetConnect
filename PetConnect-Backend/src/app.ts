@@ -12,6 +12,7 @@ import usersRoutes from './routes/users_routes';
 import swaggerSpecs from './utils/swagger';
 import cors from 'cors';
 import corsOptions from './utils/cors';
+import path from 'path';
 
 app.use(express.json()); //************************we can remove this line****************************//
 app.use(bodyParser.json());
@@ -24,7 +25,7 @@ app.use("/posts", postsRoutes);
 app.use("/events", eventsRoutes);
 app.use("/posts/:postId/comments", commentsRoutes);
 app.use("/user/", usersRoutes);
-
+app.use('/uploads', express.static(path.join(__dirname, './uploads')));
 
 app.use(cors(corsOptions));
 

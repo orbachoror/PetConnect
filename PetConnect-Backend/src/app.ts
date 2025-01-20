@@ -17,6 +17,7 @@ import path from 'path';
 app.use(express.json()); //************************we can remove this line****************************//
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors(corsOptions));
 
 
 /*routes*/
@@ -27,7 +28,6 @@ app.use("/posts/:postId/comments", commentsRoutes);
 app.use("/user/", usersRoutes);
 app.use('/uploads', express.static(path.join(__dirname, './uploads')));
 
-app.use(cors(corsOptions));
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpecs));
 

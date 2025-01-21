@@ -27,8 +27,7 @@ const Login: React.FC = () => {
          PetConnect Login
         </Typography>
         <form onSubmit={handleSubmit}>
-          <TextField
-            label="Email"
+          <TextField label="Email"
             fullWidth
             margin="normal"
             value={email}

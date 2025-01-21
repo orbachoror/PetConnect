@@ -1,9 +1,11 @@
 import { Request, Response } from 'express';
 import authService from '../services/auth_service';
 import logger from '../utils/logger';
+const usersUploadPath = 'uploads/users_pictures/';
 
 
 const register = async (req: Request, res: Response) => {
+    req.body.profilePicture = req.file ? `${usersUploadPath}${req.file.filename}` : null;
     const { name, email, password, ...rest } = req.body
     if (!email || !password || !name) {
         logger.error('Email ,password and name are required');

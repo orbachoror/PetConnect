@@ -1,9 +1,13 @@
 import authController from '../controllers/auth_controller';
 import express from 'express';
+import { createUploadMiddleware } from '../middleware/image_upload_middleware';
 
 const router = express.Router();
-router.post('/register', authController.register);
-router.post('/login', authController.login);
+router.post('/register', createUploadMiddleware("users_pictures"), (req, res, next) => {
+    console.log("Multer processed file:", req.file);
+    console.log("Request body:", req.body);
+    next();
+}, authController.register); router.post('/login', authController.login);
 router.post('/logout', authController.logout);
 router.post('/refresh', authController.refresh);
 

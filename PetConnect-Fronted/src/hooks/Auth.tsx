@@ -14,6 +14,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+    console.log('auth provider useefect');
     if (token) {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setIsAuthenticated(true);

@@ -4,7 +4,17 @@ export const getPosts = async () => {
     return response.data;
 };
 
-export const getPostById = async (id: string) => {
-    const response = await api.get(`/posts/${id}`);
+export const getPostById = async (postId: string) => {
+    const response = await api.get(`/posts/${postId}`);
     return response.data;
 };
+
+export const toggleLike = async (postId: string) => {
+    try {
+        const response = await api.post(`/posts/${postId}/like`);
+        return response.data.likes;
+    } catch (error) {
+        console.error("Failed to toggle like:", error);
+    }
+
+}

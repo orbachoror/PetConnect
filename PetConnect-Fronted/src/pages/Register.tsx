@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Container, Typography, TextField, Button, Box, Grid } from "@mui/material";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Grid,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import axios from "../services/api";
 
@@ -16,10 +23,11 @@ const Register: React.FC = () => {
     address: "",
     dateOfBirth: "",
   });
-  const [profilePicture, setProfilePicture] = useState<File | null>(null); 
-  const [preview, setPreview] = useState<string | null>(null); 
+  const [profilePicture, setProfilePicture] = useState<File | null>(null); // State for profile picture
+  const [preview, setPreview] = useState<string | null>(null); // State for live preview
   const [error, setError] = useState("");
 
+  // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -28,18 +36,28 @@ const Register: React.FC = () => {
     }));
   };
 
+  // Handle file input change for profile picture
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setProfilePicture(file);
-      setPreview(URL.createObjectURL(file)); 
+      setPreview(URL.createObjectURL(file)); // Generate a live preview
     }
   };
 
+  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { name, email, password, confirmPassword, phone, address, dateOfBirth } = formData;
+    const {
+      name,
+      email,
+      password,
+      confirmPassword,
+      phone,
+      address,
+      dateOfBirth,
+    } = formData;
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
@@ -47,6 +65,7 @@ const Register: React.FC = () => {
     }
 
     try {
+      // Create FormData
       const formDataPayload = new FormData();
       formDataPayload.append("name", name);
       formDataPayload.append("email", email);
@@ -57,7 +76,10 @@ const Register: React.FC = () => {
       if (dateOfBirth) formDataPayload.append("dateOfBirth", dateOfBirth);
       if (profilePicture) formDataPayload.append("image", profilePicture); // Attach profile picture
 
+      // Send FormData to the backend
       await axios.post("/auth/register", formDataPayload);
+
+      // Redirect to login after successful registration
       navigate("/login");
     } catch (err: any) {
       console.error("Registration failed:", err);
@@ -190,7 +212,12 @@ const Register: React.FC = () => {
             </Grid>
             {/* Submit Button */}
             <Grid item xs={12}>
-              <Button type="submit" variant="contained" color="primary" fullWidth>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+              >
                 Register
               </Button>
             </Grid>

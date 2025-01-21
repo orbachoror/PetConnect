@@ -3,7 +3,7 @@ import Navbar from './components/Navbar';
 import HomePage from './pages/Home';
 import LoginPage from './pages/Login';
 import RegisterPage from './pages/Register';
-import PostsPage from './pages/Posts';
+import PostsPage from './pages/PostsPage';
 import EventsPage from './pages/Events';
 import { AuthProvider } from './hooks/Auth';
 

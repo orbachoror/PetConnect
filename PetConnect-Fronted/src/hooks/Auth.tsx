@@ -3,14 +3,26 @@ import api from '../services/api';
 
 interface AuthContextProps {
   isAuthenticated: boolean;
+  user: IUser | null; 
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
+}
+
+export interface IUser {
+  name: string;
+  email: string;
+  password: string;
+  phone?: string;
+  address?: string;
+  dateOfBirth?: Date;
+  profilePicture?: string;
 }
 
 const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [user, setUser] = useState<IUser>({} as IUser);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -27,6 +39,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.setItem('token', response.data.accessToken);
     api.defaults.headers.common['Authorization'] = `Bearer ${response.data.accessToken}`;
     setIsAuthenticated(true);
+    setUser(response.data);
   };
 
   const logout = () => {
@@ -36,7 +49,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, login, logout }}>
+    <AuthContext.Provider value={{ isAuthenticated,user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

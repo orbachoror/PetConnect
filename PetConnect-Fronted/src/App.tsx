@@ -6,6 +6,7 @@ import RegisterPage from './pages/Register';
 import PostsPage from './pages/Posts';
 import EventsPage from './pages/Events';
 import { AuthProvider } from './hooks/Auth';
+import ProfilePage from './pages/Profile';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/posts" element={<PostsPage />} />
           <Route path="/events" element={<EventsPage />} />
+          <Route path="/profile" element={<ProfilePage />}/>
         </Routes>
       </Router>
     </AuthProvider>

@@ -34,6 +34,12 @@ const login = async (req: Request, res: Response) => {
             {
                 message: "User logged in successfully",
                 _id: user._id,
+                name: user.name,
+                email: user.email,
+                phone: user.phone,
+                address: user.address,
+                dateOfBirth: user.dateOfBirth,
+                profilePicture: user.profilePicture,
                 accessToken: accessToken,
                 refreshToken: refreshToken
             }

@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import api from '../services/api';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import api from "../services/api";
 
 interface AuthContextProps {
   isAuthenticated: boolean;
@@ -9,14 +9,16 @@ interface AuthContextProps {
 
 const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    console.log('auth provider useefect');
+    const token = localStorage.getItem("token");
+    console.log("auth provider useefect");
     if (token) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+      api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
@@ -24,15 +26,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await api.post('/auth/login', { email, password });
-    localStorage.setItem('token', response.data.accessToken);
-    api.defaults.headers.common['Authorization'] = `Bearer ${response.data.accessToken}`;
+    const response = await api.post("/auth/login", { email, password });
+    localStorage.setItem("token", response.data.accessToken);
+    localStorage.setItem("userId", response.data.userId);
+    api.defaults.headers.common[
+      "Authorization"
+    ] = `Bearer ${response.data.accessToken}`;
     setIsAuthenticated(true);
   };
 
   const logout = () => {
-    localStorage.removeItem('token');
-    delete api.defaults.headers.common['Authorization'];
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    delete api.defaults.headers.common["Authorization"];
     setIsAuthenticated(false);
   };
 

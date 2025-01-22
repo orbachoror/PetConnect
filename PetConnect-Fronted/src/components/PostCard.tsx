@@ -1,17 +1,27 @@
 import React from "react";
-import { Card, CardContent, Typography, Box, CardMedia } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  CardMedia,
+  IconButton,
+} from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-import { toggleLike } from "../services/postApi";
+
 interface PostCardProps {
   ownerEmail: string;
   title: string;
   description: string;
   postPicture: string | null;
   likes: number;
+  likedBy: string[];
   commentsCount: number;
   id: string;
+  userId: string;
   onClick: (id: string) => void;
+  onToggleLike: () => void;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -20,19 +30,14 @@ const PostCard: React.FC<PostCardProps> = ({
   description,
   postPicture,
   likes,
+  likedBy,
   commentsCount,
   id,
+  userId,
   onClick,
+  onToggleLike,
 }) => {
-  const onLikeClick = async () => {
-    try {
-      const likes = await toggleLike(id);
-      return likes;
-    } catch (error) {
-      console.error("Failed to like post:", error);
-      alert("Failed to like post. Please try again later.");
-    }
-  };
+  const isLiked = likedBy.includes(userId);
   return (
     <Card
       sx={{
@@ -95,10 +100,13 @@ const PostCard: React.FC<PostCardProps> = ({
           mt="auto"
         >
           <Box display="flex" alignItems="center">
-            <FavoriteIcon color="error" sx={{ mr: 1 }} />
-            <Typography variant="body2" onClick={() => onLikeClick()}>
-              {likes}
-            </Typography>
+            <IconButton onClick={onToggleLike}>
+              <FavoriteIcon
+                color={isLiked ? "error" : "disabled"}
+                sx={{ mr: 1 }}
+              />
+            </IconButton>
+            <Typography variant="body2">{likes}</Typography>
           </Box>
           <Box display="flex" alignItems="center">
             <ChatBubbleOutlineIcon color="primary" sx={{ mr: 1 }} />

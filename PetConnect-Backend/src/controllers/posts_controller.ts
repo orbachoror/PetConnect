@@ -40,16 +40,12 @@ class PostsController extends BaseController<IPost> {
             if (alreadyLiked) {
                 post.likedBy = post.likedBy.filter(id => id.toString() !== userId);
                 post.likes -= 1;
-                await post.save();
-                logger.info("Post unliked");
-                res.status(200).send(post);
             } else {
                 post.likedBy.push(userId);
                 post.likes += 1;
-                await post.save();
-                logger.info("Post liked");
-                res.status(200).send(post);
             }
+            await post.save();
+            res.status(200).send({ likes: post.likes, likedBy: post.likedBy });
         } catch (error) {
             logger.error("Error toggling like:" + error);
             res.status(500).send("Error toggling like" + error);

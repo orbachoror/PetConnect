@@ -1,19 +1,9 @@
-import React from 'react';
-import { Grid, TextField } from '@mui/material';
+import React from "react";
+import { Grid, TextField } from "@mui/material";
+import { SenteziedUserType } from "../types/User";
 
-interface ProfileEditFormProps {
-  formData: {
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-    dateOfBirth: string;
-    profilePicture: string;
-  };
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
 
-const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ formData, handleInputChange }) => {
+const ProfileEditForm: React.FC<SenteziedUserType> = (formData)=> {
   return (
     <Grid item xs={12}>
       <TextField
@@ -21,7 +11,6 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ formData, handleInput
         label="Name"
         name="name"
         value={formData.name}
-        onChange={handleInputChange}
         variant="outlined"
         margin="normal"
       />
@@ -30,7 +19,6 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ formData, handleInput
         label="Phone"
         name="phone"
         value={formData.phone}
-        onChange={handleInputChange}
         variant="outlined"
         margin="normal"
       />
@@ -39,7 +27,6 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ formData, handleInput
         label="Address"
         name="address"
         value={formData.address}
-        onChange={handleInputChange}
         variant="outlined"
         margin="normal"
       />
@@ -49,7 +36,6 @@ const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ formData, handleInput
         name="dateOfBirth"
         type="date"
         value={formData.dateOfBirth}
-        onChange={handleInputChange}
         InputLabelProps={{ shrink: true }}
         variant="outlined"
         margin="normal"

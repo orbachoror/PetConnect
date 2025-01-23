@@ -1,6 +1,7 @@
 import User, { IUser } from '../models/user_model';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import logger from '../utils/logger';
 
 interface RegisterUserParams {
     name: string,
@@ -42,6 +43,7 @@ const login = async ({ email, password }: { email: string, password: string }):
 }
 
 const logout = async (refreshToken: string) => {
+    logger.info("refreshToken in logout " + refreshToken);
     const user = await validateRefreshToken(refreshToken);
     user.refreshTokens = user.refreshTokens?.filter(token => token !== refreshToken);
     await user.save();
@@ -49,6 +51,9 @@ const logout = async (refreshToken: string) => {
 
 }
 const refresh = async (refreshToken: string) => {
+    if (!refreshToken) {
+        throw new Error('Refresh token is required');
+    }
     const user = await validateRefreshToken(refreshToken);
     const tokens = await generateTokens(user);
     if (!tokens) {

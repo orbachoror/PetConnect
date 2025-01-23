@@ -1,55 +1,69 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import api from '../services/api';
+import React, {
+  FC,
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+} from "react";
+import { loginApi } from "../services/authApi";
+import { logoutApi } from "../services/authApi";
+import { SenteziedUserType, UserType } from "../types/User";
 
 interface AuthContextProps {
+  currentUser: SenteziedUserType | null;
   isAuthenticated: boolean;
-  user: IUser | null; 
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-}
-
-export interface IUser {
-  name: string;
-  email: string;
-  password: string;
-  phone?: string;
-  address?: string;
-  dateOfBirth?: Date;
-  profilePicture?: string;
+  updateUser: (updatedUser: SenteziedUserType | null) => void;
 }
 
 const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [user, setUser] = useState<IUser>({} as IUser);
-
+  const [currentUser, setCurrentUser] = useState<SenteziedUserType | null>(
+    null
+  );
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("accessToken");
     if (token) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       setIsAuthenticated(true);
     } else {
       setIsAuthenticated(false);
     }
   }, []);
-
+  const sanitizeUser = (user: UserType): SenteziedUserType => {
+    const { name, email, phone, address, dateOfBirth, profilePicture } = user;
+    return { name, email, phone, address, dateOfBirth, profilePicture };
+  };
   const login = async (email: string, password: string) => {
-    const response = await api.post('/auth/login', { email, password });
-    localStorage.setItem('token', response.data.accessToken);
-    api.defaults.headers.common['Authorization'] = `Bearer ${response.data.accessToken}`;
+    const { accessToken, user, refreshToken } = await loginApi(email, password);
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("userId", user._id);
+    localStorage.setItem("refreshToken", refreshToken);
+    setCurrentUser(sanitizeUser(user));
+    localStorage.setItem("userName", user.name);
+    localStorage.setItem("userProfilePicture", user.profilePicture);
     setIsAuthenticated(true);
-    setUser(response.data);
   };
 
-  const logout = () => {
-    localStorage.removeItem('token');
-    delete api.defaults.headers.common['Authorization'];
+  const logout = async () => {
+    await logoutApi(localStorage.getItem("refreshToken"));
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("refreshToken");
+    setCurrentUser(null);
     setIsAuthenticated(false);
   };
-
+  const updateUser = (updatedUser: SenteziedUserType | null) => {
+    setCurrentUser(updatedUser);
+  };
   return (
-    <AuthContext.Provider value={{ isAuthenticated,user, login, logout }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, login, logout, currentUser, updateUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 import { Grid } from "@mui/material";
 import PostCard from "./PostCard";
-import { Post } from "../hooks/usePostsWithComments";
+import { Post } from "../hooks/usePosts";
 import { useNavigate } from "react-router-dom";
 
 const baseUrl = import.meta.env.VITE_API_BASE_URL;

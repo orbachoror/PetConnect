@@ -8,7 +8,7 @@ import {
   Grid,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "../services/api";
+import { registerApi } from "../services/authApi";
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -76,10 +76,7 @@ const Register: React.FC = () => {
       if (dateOfBirth) formDataPayload.append("dateOfBirth", dateOfBirth);
       if (profilePicture) formDataPayload.append("image", profilePicture); // Attach profile picture
 
-      // Send FormData to the backend
-      await axios.post("/auth/register", formDataPayload);
-
-      // Redirect to login after successful registration
+      await registerApi(formDataPayload);
       navigate("/login");
     } catch (err: any) {
       console.error("Registration failed:", err);

@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, CircularProgress } from "@mui/material";
 import PostsGrid from "../components/PostsGrid";
-import usePostsWithComments from "../hooks/usePostsWithComments";
+import usePostsWithComments from "../hooks/usePosts";
 import { toggleLike } from "../services/postApi";
 
 const PostsPage: React.FC = () => {

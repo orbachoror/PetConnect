@@ -1,17 +1,17 @@
-import React from "react";
+import { FC } from "react";
 import { AppBar, Toolbar, Typography, Box } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/Auth";
 import Button from "../types/Button";
 
-const NavigationBar: React.FC = () => {
-  const { isAuthenticated, user, logout } = useAuth();
+const NavigationBar: FC = () => {
+  const { isAuthenticated, logout, currentUser } = useAuth();
   const navigate = useNavigate();
-
   const handleLogout = () => {
     logout();
     navigate("/login");
   };
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   return (
     <AppBar
@@ -58,10 +58,10 @@ const NavigationBar: React.FC = () => {
                 <Button to="/" onClick={handleLogout}>
                   Logout
                 </Button>
-                {user && (
+                {localStorage?.getItem("userProfilePicture") ? (
                   <Typography variant="body1" sx={{ color: "#1976d2" }}>
                     <img
-                      src={user.profilePicture}
+                      src={baseUrl + localStorage.getItem("userProfilePicture")}
                       style={{
                         width: 40,
                         height: 40,
@@ -69,6 +69,10 @@ const NavigationBar: React.FC = () => {
                         marginRight: 10,
                       }}
                     />
+                  </Typography>
+                ) : (
+                  <Typography variant="body1" sx={{ color: "#1976d2" }}>
+                    {"Hello " + localStorage.getItem("userName")}
                   </Typography>
                 )}
               </Box>

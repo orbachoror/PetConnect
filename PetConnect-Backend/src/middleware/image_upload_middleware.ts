@@ -1,4 +1,4 @@
-import multer from 'multer';
+import multer, { FileFilterCallback } from 'multer';
 import path from 'path';
 import fs from 'fs';
 import { Request } from 'express';
@@ -22,7 +22,7 @@ export const createUploadMiddleware = (type: string) => {
         }
     })
 
-    const fileFilter = (req: Request, file: Express.Multer.File, cb: any) => {
+    const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
         console.log("File received by filter:", file);
 
         if (file.mimetype.startsWith('image/')) {
@@ -30,7 +30,7 @@ export const createUploadMiddleware = (type: string) => {
             cb(null, true);
         } else {
             logger.error("Only image files are allowed");
-            cb(new Error("Only image files are allowed"), false);
+            cb(new Error("Only image files are allowed"));
         }
     };
 

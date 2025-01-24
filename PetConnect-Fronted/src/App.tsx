@@ -5,7 +5,7 @@ import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import PostsPage from "./pages/PostsPage";
 import EventsPage from "./pages/Events";
-import { AuthProvider, useAuth } from "./hooks/Auth";
+import { useAuth } from "./hooks/Auth";
 import ProfilePage from "./pages/Profile";
 import CreatePostPage from "./pages/CreatePostPage";
 import PostPage from "./pages/PostPage";

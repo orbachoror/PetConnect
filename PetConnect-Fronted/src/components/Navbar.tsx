@@ -11,7 +11,8 @@ const NavigationBar: FC = () => {
     logout();
     navigate("/login");
   };
-  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  const baseUrl = import.meta.env.VITE_API_BASE_URL + "/";
+
   return (
     <AppBar
       position="sticky"

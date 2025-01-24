@@ -5,7 +5,7 @@ export type SenteziedUserType = {
     phone?: string;
     address?: string;
     dateOfBirth?: string;
-    profilePicture: string;
+    profilePicture?: string;
 };
 export type UserType = {
     name: string;

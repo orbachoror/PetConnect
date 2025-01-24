@@ -1,18 +1,54 @@
 import React, { useState, useEffect } from "react";
 import { Box, Grid, Paper } from "@mui/material";
-import ProfileAvatar from "../types/ProfileAvatar";
-import ProfileDetails from "../types/ProfileDetailes";
-import ProfileEditForm from "../types/ProfileEditForm";
-import ProfileActions from "../types/ProfileACtions";
-import { useAuth } from "../hooks/Auth";
+import DetailsForm from "../components/ProfileDetailes";
+import EditForm from "../components/ProfileEditForm";
 import api from "../services/api";
 import { SenteziedUserType } from "../types/User";
+import { useAuth } from "../hooks/Auth";
 
 const Profile: React.FC = () => {
-  const { currentUser } = useAuth();
   const [userDetails, setUserDetails] = useState<SenteziedUserType>(
     {} as SenteziedUserType
   );
+  const [cancelEdit, setCancelEdit] = useState<SenteziedUserType>(
+    {} as SenteziedUserType
+  );
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  const { updateUser } = useAuth();
+  useEffect(() => {
+    fetchUserDetails();
+  }, []);
+
+  const fetchUserDetails = async () => {
+    try {
+      const response = await api.get("/user");
+      if (response.status === 200) {
+        const user = response.data;
+        const formattedUserDetails = {
+          name: user.name,
+          email: user.email,
+          phone: user.phone || "",
+          address: user.address || "",
+          dateOfBirth: user.dateOfBirth ? formatDate(user.dateOfBirth) : "",
+          profilePicture: user.profilePicture || "",
+        };
+
+        setUserDetails(formattedUserDetails);
+        setCancelEdit(formattedUserDetails);
+      } else {
+        console.error("Failed to fetch user details");
+      }
+    } catch (err) {
+      console.error("Error fetching user details:", err);
+    }
+  };
+
+  /*--------------------
+  |  formatDate Function
+  ---------------------*/
 
   const formatDate = (dateString: string | Date) => {
     if (!dateString) return "";
@@ -20,79 +56,45 @@ const Profile: React.FC = () => {
     return date.toISOString().split("T")[0];
   };
 
-  const [isEditMode, setIsEditMode] = useState(false);
-  const [formData, setFormData] = useState<SenteziedUserType>(userDetails);
-
-  useEffect(() => {
-    if (currentUser) {
-      setUserDetails({
-        name: currentUser.name,
-        email: currentUser.email,
-        phone: currentUser.phone || "",
-        address: currentUser.address || "",
-        dateOfBirth: currentUser.dateOfBirth
-          ? formatDate(currentUser.dateOfBirth)
-          : "",
-        profilePicture: currentUser.profilePicture || "",
-      });
-      setFormData({
-        name: currentUser.name,
-        email: currentUser.email,
-        phone: currentUser.phone || "",
-        address: currentUser.address || "",
-        dateOfBirth: currentUser.dateOfBirth
-          ? formatDate(currentUser.dateOfBirth)
-          : "",
-        profilePicture: currentUser.profilePicture || "",
-      });
-    }
-  }, [currentUser]);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handlePictureChange = (file: File | null) => {
+  const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (reader.result) {
-          setFormData({ ...formData, profilePicture: reader.result as string });
-          setUserDetails({
-            ...userDetails,
-            profilePicture: reader.result as string,
-          });
-        }
-      };
-      reader.readAsDataURL(file); // Convert file to base64 string for display
+      const fileURL = URL.createObjectURL(file);
+      setImage(file);
+      setPreview(fileURL);
+      setUserDetails({ ...userDetails, profilePicture: fileURL });
     }
   };
 
   const handleSave = async () => {
     try {
-      setUserDetails(formData);
+      const formData = new FormData();
+      formData.append("name", userDetails.name);
+      formData.append("email", userDetails.email);
+      formData.append("phone", userDetails.phone || "");
+      formData.append("address", userDetails.address || "");
+      formData.append("dateOfBirth", userDetails.dateOfBirth || "");
+      if (image) formData.append("image", image);
       setIsEditMode(false);
-
-      const response = await api.put("/user/", formData, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+      const response = await api.put("/user", formData);
 
       if (response.status === 200) {
         alert("User updated successfully");
+        updateUser(response.data);
+        setCancelEdit(response.data);
       } else {
-        alert("Error updating user");
-        throw new Error("Error updating user");
+        alert("Error updating user after sending data");
+        throw new Error("Error updating user after sending data");
       }
-    } catch {
+    } catch (err) {
+      console.log("Error updating user" + err);
       alert("Error updating user");
     }
   };
 
   const handleCancel = () => {
-    setFormData(userDetails);
+    setUserDetails(cancelEdit);
+    setPreview(null); // ------------Reset preview to the original profile picture--------------//
     setIsEditMode(false);
   };
 
@@ -110,7 +112,7 @@ const Profile: React.FC = () => {
       }}
     >
       <Grid container spacing={4} sx={{ maxWidth: "1900px", width: "100%" }}>
-        <Grid item xs={12} md={3}>
+        <Grid item xs={12} md={4}>
           <Paper
             elevation={5}
             sx={{
@@ -120,30 +122,28 @@ const Profile: React.FC = () => {
               backgroundColor: "#ffffff",
             }}
           >
-            <Grid container spacing={3}>
-              <ProfileAvatar
-                src={formData.profilePicture}
-                onPictureChange={isEditMode ? handlePictureChange : null}
-              />
-              {isEditMode ? (
-                <ProfileEditForm
-                  formData={formData}
-                  handleInputChange={handleInputChange}
-                />
-              ) : (
-                <ProfileDetails {...userDetails} />
-              )}
-              <ProfileActions
-                isEditMode={isEditMode}
+            {isEditMode ? (
+              <EditForm
+                userDetails={userDetails}
+                setUserDetails={setUserDetails}
+                onPictureChange={handlePictureChange}
+                preview={preview}
                 onSave={handleSave}
                 onCancel={handleCancel}
+                baseUrl={baseUrl}
+              />
+            ) : (
+              <DetailsForm
+                userDetails={userDetails}
+                baseUrl={baseUrl}
+                preview={preview}
                 onEdit={() => setIsEditMode(true)}
               />
-            </Grid>
+            )}
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={9}>
+        <Grid item xs={12} md={8}>
           <Paper
             elevation={3}
             sx={{

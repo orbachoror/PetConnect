@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Box, Grid, Paper, TextField, Avatar,Typography } from "@mui/material";
-import ProfileActions from "../types/ProfileACtions";
+import { Box, Grid, Paper } from "@mui/material";
+import DetailsForm from "../components/ProfileDetailes";
+import EditForm from "../components/ProfileEditForm";
 import api from "../services/api";
 import { SenteziedUserType } from "../types/User";
 
-
-//update the date after twice editing
- 
 const Profile: React.FC = () => {
   const [userDetails, setUserDetails] = useState<SenteziedUserType>({} as SenteziedUserType);
   const [cancelEdit, setCancelEdit] = useState<SenteziedUserType>({} as SenteziedUserType);
@@ -54,12 +52,6 @@ const Profile: React.FC = () => {
     return date.toISOString().split("T")[0];
   };
 
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setUserDetails({ ...userDetails, [name]: value });
-  };
-
   const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -97,7 +89,7 @@ const Profile: React.FC = () => {
 
   const handleCancel = () => {
     setUserDetails(cancelEdit);
-    setPreview(null); // Reset preview to the original profile picture
+    setPreview(null); // ------------Reset preview to the original profile picture--------------//
     setIsEditMode(false);
   };
 
@@ -124,141 +116,25 @@ const Profile: React.FC = () => {
               minHeight: "100%",
               backgroundColor: "#ffffff",
             }}
-          >
-            
+          >      
               {isEditMode ? (
-                <>
-                  <Avatar
-                    src={preview ? preview : userDetails.profilePicture ? baseUrl + "/" + userDetails.profilePicture : undefined}
-                    alt="Profile Picture"
-                    sx={{
-                      width: 120,
-                      height: 120,
-                      margin: '0 auto',
-                      border: '4px solid #90caf9',
-                      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
-                      cursor: 'pointer',
-                    }}
-                    onClick={() => document.getElementById('profilePictureInput')?.click()}
+                <EditForm
+                userDetails={userDetails}
+                setUserDetails={setUserDetails}
+                onPictureChange={handlePictureChange}
+                preview={preview}
+                onSave={handleSave}
+                onCancel={handleCancel}
+                baseUrl={baseUrl}
+                />
+              ) : (  
+                  <DetailsForm
+                  userDetails={userDetails}
+                  baseUrl={baseUrl}
+                  preview={preview}
+                  onEdit={() => setIsEditMode(true)}
                   />
-                  <input
-                    type="file"
-                    alt="Preview"
-                    id="profilePictureInput"
-                    style={{ display: 'none' }}
-                    accept="image/png, image/jpeg"
-                    onChange={handlePictureChange}
-                  />
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Name"
-                      name="name"
-                      value={userDetails.name}
-                      onChange={handleInputChange}
-                      variant="outlined"
-                      margin="normal"
-                    />
-                    <TextField
-                      fullWidth
-                      label="Phone"
-                      name="phone"
-                      value={userDetails.phone}
-                      onChange={handleInputChange}
-                      variant="outlined"
-                      margin="normal"
-                    />
-                    <TextField
-                      fullWidth
-                      label="Address"
-                      name="address"
-                      value={userDetails.address}
-                      onChange={handleInputChange}
-                      variant="outlined"
-                      margin="normal"
-                    />
-                    <TextField
-                      fullWidth
-                      label="Date of Birth"
-                      name="dateOfBirth"
-                      type="date"
-                      value={userDetails.dateOfBirth}
-                      onChange={handleInputChange}
-                      InputLabelProps={{ shrink: true }}
-                      variant="outlined"
-                      margin="normal"
-                    />
-                  </Grid>
-                </>
-              ) : (
-                <>
-                  <Avatar
-                    src={preview ? preview : userDetails.profilePicture ? baseUrl + "/" + userDetails.profilePicture : undefined}
-                    alt="Profile Picture"
-                    sx={{
-                      width: 120,
-                      height: 120,
-                      margin: '0 auto',
-                      border: '4px solid #90caf9',
-                      boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.2)',
-                      cursor: 'default',
-                    }}
-                  />
-                  <Grid item xs={12}>
-                    <Typography
-                      variant="h5"
-                      align="center"
-                      gutterBottom
-                      sx={{
-                        color: "#1976d2",
-                        fontWeight: 600,
-                      }}
-                    >
-                      {userDetails.name}
-                    </Typography>
-                    <Typography variant="body1" align="center" sx={{ color: "#6b7280" }}>
-                      {userDetails.email}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        fontSize: "1.1rem",
-                        marginBottom: 1,
-                        color: "#374151",
-                      }}
-                    >
-                      <strong>Phone:</strong> {userDetails.phone}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        fontSize: "1.1rem",
-                        marginBottom: 1,
-                        color: "#374151",
-                      }}
-                    >
-                      <strong>Address:</strong> {userDetails.address}
-                    </Typography>
-                    <Typography
-                      variant="body1"
-                      sx={{
-                        fontSize: "1.1rem",
-                        marginBottom: 1,
-                        color: "#374151",
-                      }}
-                    >
-                      <strong>Date of Birth:</strong> {userDetails.dateOfBirth}
-                    </Typography>
-                  </Grid>
-                  
-                </>
-              )}      
-                  <ProfileActions
-                    isEditMode={isEditMode}
-                    onSave={handleSave}
-                    onCancel={handleCancel}
-                    onEdit={() => setIsEditMode(true)}
-                  />        
+              )}             
             </Paper>
         </Grid>
 

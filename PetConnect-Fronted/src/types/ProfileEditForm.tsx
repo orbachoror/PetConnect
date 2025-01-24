@@ -1,19 +1,16 @@
-import React from 'react';
-import { Grid, TextField } from '@mui/material';
+import React from "react";
+import { Grid, TextField } from "@mui/material";
+import { SenteziedUserType } from "../types/User";
 
 interface ProfileEditFormProps {
-  formData: {
-    name: string;
-    email: string;
-    phone: string;
-    address: string;
-    dateOfBirth: string;
-    profilePicture: string;
-  };
+  formData: SenteziedUserType;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const ProfileEditForm: React.FC<ProfileEditFormProps> = ({ formData, handleInputChange }) => {
+const ProfileEditForm: React.FC<ProfileEditFormProps> = ({
+  formData,
+  handleInputChange,
+}) => {
   return (
     <Grid item xs={12}>
       <TextField

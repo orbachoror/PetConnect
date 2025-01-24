@@ -1,61 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Grid, Paper } from '@mui/material';
-import ProfileAvatar from '../types/ProfileAvatar';
-import ProfileDetails from '../types/ProfileDetailes';
-import ProfileEditForm from '../types/ProfileEditForm';
-import ProfileActions from '../types/ProfileACtions';
-import { useAuth } from '../hooks/Auth';
-import api from '../services/api';
-
-interface IUser {
-  name: string;
-  email: string;
-  phone: string;
-  address: string;
-  dateOfBirth: string;
-  profilePicture: string;
-}
+import React, { useState, useEffect } from "react";
+import { Box, Grid, Paper } from "@mui/material";
+import ProfileAvatar from "../types/ProfileAvatar";
+import ProfileDetails from "../types/ProfileDetailes";
+import ProfileEditForm from "../types/ProfileEditForm";
+import ProfileActions from "../types/ProfileACtions";
+import { useAuth } from "../hooks/Auth";
+import api from "../services/api";
+import { SenteziedUserType } from "../types/User";
 
 const Profile: React.FC = () => {
-  const { user } = useAuth();
-  const [userDetails, setUserDetails] = useState<IUser>({
-    name: '',
-    email: '',
-    phone: '',
-    address: '',
-    dateOfBirth: '',
-    profilePicture: '',
-  });
+  const { currentUser } = useAuth();
+  const [userDetails, setUserDetails] = useState<SenteziedUserType>(
+    {} as SenteziedUserType
+  );
 
   const formatDate = (dateString: string | Date) => {
-    if (!dateString) return '';
+    if (!dateString) return "";
     const date = new Date(dateString);
-    return date.toISOString().split('T')[0]; 
+    return date.toISOString().split("T")[0];
   };
 
   const [isEditMode, setIsEditMode] = useState(false);
-  const [formData, setFormData] = useState<IUser>(userDetails);
+  const [formData, setFormData] = useState<SenteziedUserType>(userDetails);
 
   useEffect(() => {
-    if (user) {
+    if (currentUser) {
       setUserDetails({
-        name: user.name,
-        email: user.email,
-        phone: user.phone || '',
-        address: user.address || '',
-        dateOfBirth: user.dateOfBirth ? formatDate(user.dateOfBirth) : '',
-        profilePicture: user.profilePicture || '',
+        name: currentUser.name,
+        email: currentUser.email,
+        phone: currentUser.phone || "",
+        address: currentUser.address || "",
+        dateOfBirth: currentUser.dateOfBirth
+          ? formatDate(currentUser.dateOfBirth)
+          : "",
+        profilePicture: currentUser.profilePicture || "",
       });
       setFormData({
-        name: user.name,
-        email: user.email,
-        phone: user.phone || '',
-        address: user.address || '',
-        dateOfBirth: user.dateOfBirth ? formatDate(user.dateOfBirth) : '',
-        profilePicture: user.profilePicture || '',
+        name: currentUser.name,
+        email: currentUser.email,
+        phone: currentUser.phone || "",
+        address: currentUser.address || "",
+        dateOfBirth: currentUser.dateOfBirth
+          ? formatDate(currentUser.dateOfBirth)
+          : "",
+        profilePicture: currentUser.profilePicture || "",
       });
     }
-  }, [user]);
+  }, [currentUser]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -68,34 +59,35 @@ const Profile: React.FC = () => {
       reader.onload = () => {
         if (reader.result) {
           setFormData({ ...formData, profilePicture: reader.result as string });
-          setUserDetails({ ...userDetails, profilePicture: reader.result as string });
+          setUserDetails({
+            ...userDetails,
+            profilePicture: reader.result as string,
+          });
         }
       };
       reader.readAsDataURL(file); // Convert file to base64 string for display
     }
   };
 
-  const handleSave = async() => {
-    
-    try{
+  const handleSave = async () => {
+    try {
       setUserDetails(formData);
       setIsEditMode(false);
 
-      const response =await api.put('/user/', formData,{
+      const response = await api.put("/user/", formData, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
-       }
-      );
+      });
 
-      if(response.status === 200){
-        alert('User updated successfully');
-      }else{
-        alert('Error updating user');
-        throw new Error('Error updating user');
+      if (response.status === 200) {
+        alert("User updated successfully");
+      } else {
+        alert("Error updating user");
+        throw new Error("Error updating user");
       }
-    }catch{
-      alert('Error updating user');
+    } catch {
+      alert("Error updating user");
     }
   };
 
@@ -107,36 +99,39 @@ const Profile: React.FC = () => {
   return (
     <Box
       sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'start',
-        minHeight: '100vh',
-        backgroundColor: '#f0f4f8',
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "start",
+        minHeight: "100vh",
+        backgroundColor: "#f0f4f8",
         padding: 4,
-        gap: 2, 
-        marginTop: 2, 
+        gap: 2,
+        marginTop: 2,
       }}
     >
-      <Grid container spacing={4} sx={{ maxWidth: '1900px', width: '100%' }}>
+      <Grid container spacing={4} sx={{ maxWidth: "1900px", width: "100%" }}>
         <Grid item xs={12} md={3}>
           <Paper
             elevation={5}
             sx={{
               padding: 4,
               borderRadius: 4,
-              minHeight: '100%',
-              backgroundColor: '#ffffff',
+              minHeight: "100%",
+              backgroundColor: "#ffffff",
             }}
           >
             <Grid container spacing={3}>
-            <ProfileAvatar
+              <ProfileAvatar
                 src={formData.profilePicture}
                 onPictureChange={isEditMode ? handlePictureChange : null}
               />
               {isEditMode ? (
-                <ProfileEditForm formData={formData} handleInputChange={handleInputChange} />
+                <ProfileEditForm
+                  formData={formData}
+                  handleInputChange={handleInputChange}
+                />
               ) : (
-                <ProfileDetails user={userDetails} />
+                <ProfileDetails {...userDetails} />
               )}
               <ProfileActions
                 isEditMode={isEditMode}
@@ -154,16 +149,16 @@ const Profile: React.FC = () => {
             sx={{
               padding: 4,
               borderRadius: 4,
-              backgroundColor: '#ffffff',
-              minHeight: '100%', 
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
+              backgroundColor: "#ffffff",
+              minHeight: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
             }}
           >
-            <Box sx={{ textAlign: 'center' }}>
-              <h2 style={{ color: '#1976d2' }}>User Posts</h2>
-              <p style={{ color: '#6b7280' }}>No posts available yet...</p>
+            <Box sx={{ textAlign: "center" }}>
+              <h2 style={{ color: "#1976d2" }}>User Posts</h2>
+              <p style={{ color: "#6b7280" }}>No posts available yet...</p>
             </Box>
           </Paper>
         </Grid>

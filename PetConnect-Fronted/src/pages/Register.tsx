@@ -1,7 +1,14 @@
 import React, { useState } from "react";
-import { Container, Typography, TextField, Button, Box, Grid } from "@mui/material";
+import {
+  Container,
+  Typography,
+  TextField,
+  Button,
+  Box,
+  Grid,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import axios from "../services/api";
+import { registerApi } from "../services/authApi";
 
 const Register: React.FC = () => {
   const navigate = useNavigate();
@@ -42,7 +49,15 @@ const Register: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const { name, email, password, confirmPassword, phone, address, dateOfBirth } = formData;
+    const {
+      name,
+      email,
+      password,
+      confirmPassword,
+      phone,
+      address,
+      dateOfBirth,
+    } = formData;
 
     if (password !== confirmPassword) {
       setError("Passwords do not match.");
@@ -61,10 +76,7 @@ const Register: React.FC = () => {
       if (dateOfBirth) formDataPayload.append("dateOfBirth", dateOfBirth);
       if (profilePicture) formDataPayload.append("image", profilePicture); // Attach profile picture
 
-      // Send FormData to the backend
-      await axios.post("/auth/register", formDataPayload);
-
-      // Redirect to login after successful registration
+      await registerApi(formDataPayload);
       navigate("/login");
     } catch (err: any) {
       console.error("Registration failed:", err);
@@ -197,7 +209,12 @@ const Register: React.FC = () => {
             </Grid>
             {/* Submit Button */}
             <Grid item xs={12}>
-              <Button type="submit" variant="contained" color="primary" fullWidth>
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+              >
                 Register
               </Button>
             </Grid>

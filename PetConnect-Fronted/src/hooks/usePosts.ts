@@ -1,19 +1,7 @@
 import { useState, useEffect } from "react";
 import { getPosts } from "../services/postApi";
 import { getCommentsCount } from "../services/commentApi";
-
-export interface Post {
-    _id: string;
-    title: string;
-    description: string;
-    postPicture: string;
-    likes: number;
-    likedBy: string[];
-    commentsCount: number;
-    owner: {
-        email: string;
-    };
-}
+import { Post } from "../types/Post";
 
 const usePostsWithComments = () => {
     const [posts, setPosts] = useState<Post[]>([]);
@@ -43,7 +31,7 @@ const usePostsWithComments = () => {
         fetchPostsWithComments();
     }, []);
 
-    return { posts, loading, refreshPosts: fetchPostsWithComments };
+    return { posts, loading, setPosts };
 };
 
 export default usePostsWithComments;

@@ -1,12 +1,6 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-
-interface Comment {
-  content: string;
-  owner: {
-    email: string;
-  };
-}
+import { Comment } from "../types/Comment";
 
 const CommentList: React.FC<{ comments: Comment[] }> = ({ comments }) => {
   return (

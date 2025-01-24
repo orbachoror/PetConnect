@@ -14,7 +14,7 @@ export type UserType = {
     phone?: string;
     address?: string;
     dateOfBirth?: string;
-    profilePicture?: string;
+    profilePicture: string;
     refreshTokens?: string[];
     _id?: string;
 };

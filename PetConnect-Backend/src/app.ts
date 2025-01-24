@@ -25,7 +25,7 @@ app.use('/auth', authRoutes);
 app.use("/posts", postsRoutes);
 app.use("/events", eventsRoutes);
 app.use("/posts/:postId/comments", commentsRoutes);
-app.use("/user/", usersRoutes);
+app.use("/user", usersRoutes);
 app.use('/uploads', express.static(path.join(__dirname, './uploads')));
 
 

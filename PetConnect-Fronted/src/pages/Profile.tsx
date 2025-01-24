@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Box, Grid, Paper, TextField, Avatar,Typography } from "@mui/material";
 import ProfileActions from "../types/ProfileACtions";
-import { useAuth } from "../hooks/Auth";
 import api from "../services/api";
 import { SenteziedUserType } from "../types/User";
 
@@ -9,11 +8,12 @@ import { SenteziedUserType } from "../types/User";
 //update the date after twice editing
  
 const Profile: React.FC = () => {
-  //const { currentUser,updateUser } = useAuth();
   const [userDetails, setUserDetails] = useState<SenteziedUserType>({} as SenteziedUserType);
   const [cancelEdit, setCancelEdit] = useState<SenteziedUserType>({} as SenteziedUserType);
   const [isEditMode, setIsEditMode] = useState(false);
   const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
     fetchUserDetails();
@@ -24,15 +24,17 @@ const Profile: React.FC = () => {
       const response = await api.get("/user");
       if (response.status === 200) {
         const user = response.data;
-        setUserDetails({
+        const formattedUserDetails = {
           name: user.name,
           email: user.email,
           phone: user.phone || "",
           address: user.address || "",
           dateOfBirth: user.dateOfBirth ? formatDate(user.dateOfBirth) : "",
           profilePicture: user.profilePicture || "",
-        });
-        setCancelEdit(userDetails); 
+        };
+  
+        setUserDetails(formattedUserDetails); 
+        setCancelEdit(formattedUserDetails);
       } else {
         console.error("Failed to fetch user details");
       }
@@ -52,22 +54,6 @@ const Profile: React.FC = () => {
     return date.toISOString().split("T")[0];
   };
 
-  
-  // useEffect(() => {
-  //   if (currentUser) {
-  //     setUserDetails({
-  //       name: currentUser.name,
-  //       email: currentUser.email,
-  //       phone: currentUser.phone || "",
-  //       address: currentUser.address || "",
-  //       dateOfBirth: currentUser.dateOfBirth
-  //         ? formatDate(currentUser.dateOfBirth)
-  //         : "",
-  //       profilePicture: currentUser.profilePicture || "",
-  //     });
-  //   }
-
-  // }, [currentUser]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -77,10 +63,10 @@ const Profile: React.FC = () => {
   const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImage(file);
-      setUserDetails({
-        ...userDetails, profilePicture: URL.createObjectURL(file) 
-      });
+      const fileURL = URL.createObjectURL(file); 
+    setImage(file); 
+    setPreview(fileURL); 
+    setUserDetails({ ...userDetails, profilePicture: fileURL }); 
     }
   };
 
@@ -94,12 +80,10 @@ const Profile: React.FC = () => {
       formData.append("dateOfBirth", userDetails.dateOfBirth || "");
       if(image) formData.append("image", image);
       setIsEditMode(false);
-
       const response = await api.put("/user", formData);
 
       if (response.status === 200) {
         alert("User updated successfully");
-        //updateUser(userDetails);
         setCancelEdit(userDetails);
       } else {
         alert("Error updating user after sending data");
@@ -113,6 +97,7 @@ const Profile: React.FC = () => {
 
   const handleCancel = () => {
     setUserDetails(cancelEdit);
+    setPreview(null); // Reset preview to the original profile picture
     setIsEditMode(false);
   };
 
@@ -144,7 +129,7 @@ const Profile: React.FC = () => {
               {isEditMode ? (
                 <>
                   <Avatar
-                    src={userDetails.profilePicture || undefined}
+                    src={preview ? preview : userDetails.profilePicture ? baseUrl + "/" + userDetails.profilePicture : undefined}
                     alt="Profile Picture"
                     sx={{
                       width: 120,
@@ -158,9 +143,10 @@ const Profile: React.FC = () => {
                   />
                   <input
                     type="file"
+                    alt="Preview"
                     id="profilePictureInput"
                     style={{ display: 'none' }}
-                    accept="image/*"
+                    accept="image/png, image/jpeg"
                     onChange={handlePictureChange}
                   />
                   <Grid item xs={12}>
@@ -207,7 +193,7 @@ const Profile: React.FC = () => {
               ) : (
                 <>
                   <Avatar
-                    src={userDetails.profilePicture || undefined}
+                    src={preview ? preview : userDetails.profilePicture ? baseUrl + "/" + userDetails.profilePicture : undefined}
                     alt="Profile Picture"
                     sx={{
                       width: 120,

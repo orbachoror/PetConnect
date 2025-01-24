@@ -4,15 +4,20 @@ import DetailsForm from "../components/ProfileDetailes";
 import EditForm from "../components/ProfileEditForm";
 import api from "../services/api";
 import { SenteziedUserType } from "../types/User";
+import { useAuth } from "../hooks/Auth";
 
 const Profile: React.FC = () => {
-  const [userDetails, setUserDetails] = useState<SenteziedUserType>({} as SenteziedUserType);
-  const [cancelEdit, setCancelEdit] = useState<SenteziedUserType>({} as SenteziedUserType);
+  const [userDetails, setUserDetails] = useState<SenteziedUserType>(
+    {} as SenteziedUserType
+  );
+  const [cancelEdit, setCancelEdit] = useState<SenteziedUserType>(
+    {} as SenteziedUserType
+  );
   const [isEditMode, setIsEditMode] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
-
+  const { updateUser } = useAuth();
   useEffect(() => {
     fetchUserDetails();
   }, []);
@@ -30,8 +35,8 @@ const Profile: React.FC = () => {
           dateOfBirth: user.dateOfBirth ? formatDate(user.dateOfBirth) : "",
           profilePicture: user.profilePicture || "",
         };
-  
-        setUserDetails(formattedUserDetails); 
+
+        setUserDetails(formattedUserDetails);
         setCancelEdit(formattedUserDetails);
       } else {
         console.error("Failed to fetch user details");
@@ -40,7 +45,6 @@ const Profile: React.FC = () => {
       console.error("Error fetching user details:", err);
     }
   };
-
 
   /*--------------------
   |  formatDate Function
@@ -55,10 +59,10 @@ const Profile: React.FC = () => {
   const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const fileURL = URL.createObjectURL(file); 
-    setImage(file); 
-    setPreview(fileURL); 
-    setUserDetails({ ...userDetails, profilePicture: fileURL }); 
+      const fileURL = URL.createObjectURL(file);
+      setImage(file);
+      setPreview(fileURL);
+      setUserDetails({ ...userDetails, profilePicture: fileURL });
     }
   };
 
@@ -70,19 +74,20 @@ const Profile: React.FC = () => {
       formData.append("phone", userDetails.phone || "");
       formData.append("address", userDetails.address || "");
       formData.append("dateOfBirth", userDetails.dateOfBirth || "");
-      if(image) formData.append("image", image);
+      if (image) formData.append("image", image);
       setIsEditMode(false);
       const response = await api.put("/user", formData);
 
       if (response.status === 200) {
         alert("User updated successfully");
-        setCancelEdit(userDetails);
+        updateUser(response.data);
+        setCancelEdit(response.data);
       } else {
         alert("Error updating user after sending data");
         throw new Error("Error updating user after sending data");
       }
     } catch (err) {
-      console.log("Error updating user"+ err);
+      console.log("Error updating user" + err);
       alert("Error updating user");
     }
   };
@@ -105,7 +110,7 @@ const Profile: React.FC = () => {
         gap: 2,
         marginTop: 2,
       }}
-     >
+    >
       <Grid container spacing={4} sx={{ maxWidth: "1900px", width: "100%" }}>
         <Grid item xs={12} md={4}>
           <Paper
@@ -116,9 +121,9 @@ const Profile: React.FC = () => {
               minHeight: "100%",
               backgroundColor: "#ffffff",
             }}
-          >      
-              {isEditMode ? (
-                <EditForm
+          >
+            {isEditMode ? (
+              <EditForm
                 userDetails={userDetails}
                 setUserDetails={setUserDetails}
                 onPictureChange={handlePictureChange}
@@ -126,16 +131,16 @@ const Profile: React.FC = () => {
                 onSave={handleSave}
                 onCancel={handleCancel}
                 baseUrl={baseUrl}
-                />
-              ) : (  
-                  <DetailsForm
-                  userDetails={userDetails}
-                  baseUrl={baseUrl}
-                  preview={preview}
-                  onEdit={() => setIsEditMode(true)}
-                  />
-              )}             
-            </Paper>
+              />
+            ) : (
+              <DetailsForm
+                userDetails={userDetails}
+                baseUrl={baseUrl}
+                preview={preview}
+                onEdit={() => setIsEditMode(true)}
+              />
+            )}
+          </Paper>
         </Grid>
 
         <Grid item xs={12} md={8}>

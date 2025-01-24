@@ -9,12 +9,23 @@ interface DetailsFormProps {
   onEdit: () => void;
 }
 
-const DetailsForm: React.FC<DetailsFormProps> = ({ userDetails, baseUrl, preview, onEdit }) => {
+const DetailsForm: React.FC<DetailsFormProps> = ({
+  userDetails,
+  baseUrl,
+  preview,
+  onEdit,
+}) => {
   return (
     <Grid container spacing={2}>
       <Grid item xs={12}>
         <Avatar
-          src={preview ? preview : userDetails.profilePicture ? baseUrl + "/" + userDetails.profilePicture : undefined}
+          src={
+            preview
+              ? preview
+              : userDetails.profilePicture
+              ? baseUrl + "/" + userDetails.profilePicture
+              : undefined
+          }
           alt="Profile Picture"
           sx={{
             width: 120,

@@ -63,7 +63,9 @@ const EditForm: React.FC<EditFormProps> = ({
           <Avatar
             src={
               preview ||
-              (userDetails.profilePicture ? `${baseUrl}/${userDetails.profilePicture}` : undefined)
+              (userDetails.profilePicture
+                ? `${baseUrl}/${userDetails.profilePicture}`
+                : undefined)
             }
             alt="Profile Picture"
             sx={{
@@ -74,7 +76,9 @@ const EditForm: React.FC<EditFormProps> = ({
               boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
               cursor: "pointer",
             }}
-            onClick={() => document.getElementById("profilePictureInput")?.click()}
+            onClick={() =>
+              document.getElementById("profilePictureInput")?.click()
+            }
           />
           <input
             type="file"
@@ -158,7 +162,9 @@ const EditForm: React.FC<EditFormProps> = ({
             value={formik.values.dateOfBirth}
             onChange={handleInputChange} // Use custom handleInputChange
             onBlur={formik.handleBlur}
-            error={formik.touched.dateOfBirth && Boolean(formik.errors.dateOfBirth)}
+            error={
+              formik.touched.dateOfBirth && Boolean(formik.errors.dateOfBirth)
+            }
             helperText={formik.touched.dateOfBirth && formik.errors.dateOfBirth}
             InputLabelProps={{ shrink: true }}
             variant="outlined"
@@ -167,7 +173,11 @@ const EditForm: React.FC<EditFormProps> = ({
         </Grid>
 
         {/* Save and Cancel Buttons */}
-        <Grid item xs={12} sx={{ display: "flex", justifyContent: "space-between" }}>
+        <Grid
+          item
+          xs={12}
+          sx={{ display: "flex", justifyContent: "space-between" }}
+        >
           <Button type="submit" variant="contained" color="primary">
             Save
           </Button>

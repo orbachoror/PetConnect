@@ -35,9 +35,9 @@ class PostsController extends BaseController<IPost> {
                 throw new Error("Post not found");
             }
 
-            const alreadyLiked = post.likedBy.includes(userId);
+            const isLiked = post.likedBy.includes(userId);
 
-            if (alreadyLiked) {
+            if (isLiked) {
                 post.likedBy = post.likedBy.filter(id => id.toString() !== userId);
                 post.likes -= 1;
             } else {
@@ -45,7 +45,7 @@ class PostsController extends BaseController<IPost> {
                 post.likes += 1;
             }
             await post.save();
-            res.status(200).send({ likes: post.likes, likedBy: post.likedBy });
+            res.status(200).send({ likes: post.likes, likedBy: post.likedBy, isLiked: !isLiked });
         } catch (error) {
             logger.error("Error toggling like:" + error);
             res.status(500).send("Error toggling like" + error);

@@ -14,7 +14,7 @@ import CommentList from "../components/CommentList";
 import { useParams } from "react-router-dom";
 import { Post } from "../types/Post";
 import { Comment } from "../types/Comment";
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
+const baseUrl = import.meta.env.VITE_API_BASE_URL + "/";
 
 const PostPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();

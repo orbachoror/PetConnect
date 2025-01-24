@@ -4,7 +4,7 @@ import PostCard from "./PostCard";
 import { Post } from "../types/Post";
 import { useNavigate } from "react-router-dom";
 
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
+const baseUrl = import.meta.env.VITE_API_BASE_URL + "/";
 
 interface PostsGridProps {
   posts: Post[];

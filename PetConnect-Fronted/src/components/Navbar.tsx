@@ -12,7 +12,6 @@ const NavigationBar: FC = () => {
     navigate("/login");
   };
   const baseUrl = import.meta.env.VITE_API_BASE_URL;
-
   return (
     <AppBar
       position="sticky"
@@ -58,10 +57,10 @@ const NavigationBar: FC = () => {
                 <Button to="/" onClick={handleLogout}>
                   Logout
                 </Button>
-                {localStorage?.getItem("userProfilePicture") ? (
+                {currentUser?.profilePicture ? (
                   <Typography variant="body1" sx={{ color: "#1976d2" }}>
                     <img
-                      src={baseUrl + localStorage.getItem("userProfilePicture")}
+                      src={baseUrl + currentUser?.profilePicture}
                       style={{
                         width: 40,
                         height: 40,
@@ -72,7 +71,7 @@ const NavigationBar: FC = () => {
                   </Typography>
                 ) : (
                   <Typography variant="body1" sx={{ color: "#1976d2" }}>
-                    {"Hello " + localStorage.getItem("userName")}
+                    {"Hello " + currentUser?.name}
                   </Typography>
                 )}
               </Box>

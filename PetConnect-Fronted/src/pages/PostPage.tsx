@@ -12,42 +12,22 @@ import { getPostById, toggleLike } from "../services/postApi";
 import { getCommentsByPostId, createComment } from "../services/commentApi";
 import CommentList from "../components/CommentList";
 import { useParams } from "react-router-dom";
-
+import { Post } from "../types/Post";
+import { Comment } from "../types/Comment";
 const baseUrl = import.meta.env.VITE_API_BASE_URL;
-
-interface Post {
-  _id: string;
-  title: string;
-  description: string;
-  postPicture: string;
-  likes: number;
-  likedBy: string[];
-  owner: {
-    email: string;
-  };
-}
-interface Comment {
-  _id: string;
-  content: string;
-  owner: {
-    email: string;
-  };
-}
 
 const PostPage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
-  // Hooks must be defined unconditionally
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState("");
   const userId = localStorage.getItem("userId") || "";
 
-  // Fetch post data
   const fetchPost = useCallback(async () => {
     try {
-      if (!id) return; // Check ID inside the callback
+      if (!id) return;
       const postData = await getPostById(id);
       setPost(postData);
     } catch (error) {
@@ -57,10 +37,9 @@ const PostPage: React.FC = () => {
     }
   }, [id]);
 
-  // Fetch comments data
   const fetchComments = useCallback(async () => {
     try {
-      if (!id) return; // Check ID inside the callback
+      if (!id) return;
       const commentsData = await getCommentsByPostId(id);
       setComments(commentsData);
     } catch (error) {
@@ -70,6 +49,10 @@ const PostPage: React.FC = () => {
 
   const handleToggleLike = async () => {
     if (!post) return;
+    if (!userId) {
+      alert("You need to be logged in to like a post.");
+      return;
+    }
     try {
       const { likes, isLiked } = await toggleLike(post._id);
       setPost({
@@ -86,11 +69,16 @@ const PostPage: React.FC = () => {
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!userId) {
+      alert("You need to be logged in to add a comment.");
+      return;
+    }
     if (!newComment.trim()) return;
     try {
-      const comment = await createComment(id!, newComment); // Use non-null assertion as ID is validated
+      const comment = await createComment(id!, newComment);
       setComments((prev) => [...prev, comment]);
       setNewComment("");
+      fetchComments();
     } catch (error) {
       console.error("Failed to add comment:", error);
     }
@@ -99,9 +87,8 @@ const PostPage: React.FC = () => {
   useEffect(() => {
     fetchPost();
     fetchComments();
-  }, [fetchPost, fetchComments]); // Add the fetch functions as dependencies
+  }, [fetchPost, fetchComments]);
 
-  // Conditional rendering based on ID
   if (!id) {
     return (
       <Container>

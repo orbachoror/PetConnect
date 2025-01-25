@@ -143,6 +143,10 @@ const PostPage: React.FC = () => {
 
     try {
       const formData = new FormData();
+      if (!updatedTitle || !updatedDescription) {
+        alert("Title and description are required.");
+        return;
+      }
       formData.append("title", updatedTitle);
       formData.append("description", updatedDescription);
       if (updatedImage) {

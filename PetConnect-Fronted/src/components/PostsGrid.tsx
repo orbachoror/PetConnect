@@ -34,7 +34,9 @@ const PostsGrid: React.FC<PostsGridProps> = ({
             ownerEmail={post.owner.email}
             likedBy={post.likedBy}
             onClick={(id) => navigate(`/posts/${id}`)}
-            onToggleLike={() => (onToggleLike ? onToggleLike(post._id) : null)}
+            onToggleLike={
+              onToggleLike ? () => onToggleLike(post._id) : undefined
+            }
           />
         </Grid>
       ))}

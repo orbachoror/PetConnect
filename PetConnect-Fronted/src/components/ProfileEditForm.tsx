@@ -84,7 +84,7 @@ const EditForm: React.FC<EditFormProps> = ({
             type="file"
             id="profilePictureInput"
             style={{ display: "none" }}
-            accept="image/png, image/jpeg"
+            accept="image/*"
             onChange={onPictureChange}
           />
         </Grid>

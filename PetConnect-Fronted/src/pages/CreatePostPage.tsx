@@ -6,10 +6,10 @@ import {
   Typography,
   Box,
   Grid,
-  CircularProgress,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { createPost } from "../services/postApi";
+import Loader from "../components/Loader";
 
 const CreatePostPage: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -56,8 +56,12 @@ const CreatePostPage: React.FC = () => {
 
       await createPost(formDataPayload);
       navigate("/posts"); // Redirect to posts page after successful creation
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to create post.");
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || "Failed to create post.");
+      } else {
+        setError("Failed to create post.");
+      }
     } finally {
       setLoading(false);
     }
@@ -134,7 +138,7 @@ const CreatePostPage: React.FC = () => {
                 fullWidth
                 disabled={loading}
               >
-                {loading ? <CircularProgress size={24} /> : "Create Post"}
+                {loading ? <Loader /> : "Create Post"}
               </Button>
             </Grid>
           </Grid>

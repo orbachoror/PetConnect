@@ -5,7 +5,8 @@ const usersUploadPath = 'uploads/users_pictures/';
 
 
 const register = async (req: Request, res: Response) => {
-    req.body.profilePicture = req.file ? `${usersUploadPath}${req.file.filename}` : null;
+    if (req.file)
+        req.body.pofilePicture = `${usersUploadPath}${req.file.filename}`;
     const { name, email, password, ...rest } = req.body
     if (!email || !password || !name) {
         logger.error('Email ,password and name are required');

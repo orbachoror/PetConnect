@@ -69,7 +69,6 @@ const Profile: React.FC = () => {
       const fileURL = URL.createObjectURL(file);
       setImage(file);
       setPreview(fileURL);
-      setUserDetails({ ...userDetails, profilePicture: fileURL });
     }
   };
 
@@ -81,7 +80,10 @@ const Profile: React.FC = () => {
       formData.append("phone", userDetails.phone || "");
       formData.append("address", userDetails.address || "");
       formData.append("dateOfBirth", userDetails.dateOfBirth || "");
-      if (image) formData.append("image", image);
+      if (image) {
+        console.log("image update user  = ", image);
+        formData.append("image", image);
+      }
       setIsEditMode(false);
       const response = await api.put("/user", formData);
 

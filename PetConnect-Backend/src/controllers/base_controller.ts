@@ -14,7 +14,6 @@ export class BaseController<T> {
     async getAll(req: Request, res: Response,) {
         try {
             const data = await baseServices.getAll(this.model, req, this.populateOptions);
-            logger.info("BaseController Get all data success " + data);
             res.status(200).send(data);
         } catch (error) {
             logger.error("BaseController Get all data failed " + error);

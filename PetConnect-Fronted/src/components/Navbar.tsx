@@ -73,7 +73,11 @@ const NavigationBar: FC = () => {
                     />
                   </Typography>
                 ) : (
-                  <Typography variant="body1" sx={{ color: "#1976d2" }}>
+                  <Typography
+                    onClick={() => navigate("/Profile")}
+                    variant="body1"
+                    sx={{ color: "#1976d2", cursor: "pointer" }}
+                  >
                     {"Hello " + currentUser?.name}
                   </Typography>
                 )}

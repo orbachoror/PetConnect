@@ -10,7 +10,9 @@ class UsersController extends BaseController<IUser> {
         super(User)
     }
     async updateItem(req: Request, res: Response): Promise<void> {
-        req.body.profilePicture = req.file ? `${userUploadPath}${req.file.filename}` : null;
+        if (req.file) {
+            req.body.profilePicture = `${userUploadPath}${req.file.filename}`;
+        }
         const id = req.query.userId;
         const updateData = req.body;
         if (!updateData || !id) {

@@ -39,7 +39,10 @@ const updateItem = async <T>(model: Model<T>, id: string, updateData: AnyExpress
     const data = populateOptions ? await model.findByIdAndUpdate(id, updateData, {
         new: true,
         runValidators: true
-    }).populate(populateOptions) : await model.findByIdAndUpdate(id, updateData);
+    }).populate(populateOptions) : await model.findByIdAndUpdate(id, updateData, {
+        new: true,
+        runValidators: true
+    });
     if (!data) {
         throw new Error('The Item Not Found');
     }

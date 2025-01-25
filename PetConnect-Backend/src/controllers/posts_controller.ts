@@ -11,11 +11,13 @@ class PostsController extends BaseController<IPost> {
     }
 
     async createItem(req: Request, res: Response): Promise<void> {
-        req.body.postPicture = req.file ? `${postsUploadPath}${req.file.filename}` : null;
+        if (req.file)
+            req.body.postPicture = `${postsUploadPath}${req.file.filename}`;
         await super.createItem(req, res);
     };
     async updateItem(req: Request, res: Response): Promise<void> {
-        req.body.postPicture = req.file ? `${postsUploadPath}${req.file.filename}` : null;
+        if (req.file)
+            req.body.postPicture = `${postsUploadPath}${req.file.filename}`;
         await super.updateItem(req, res);
     }
 

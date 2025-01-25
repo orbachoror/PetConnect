@@ -1,3 +1,4 @@
+import { CredentialResponse } from "@react-oauth/google";
 import api from "./api";
 
 export const loginApi = async (email: string, password: string) => {
@@ -5,6 +6,11 @@ export const loginApi = async (email: string, password: string) => {
         email,
         password
     })
+    return response.data;
+}
+
+export const googleSignIn = async (credentialResponse:CredentialResponse) => {
+    const response = await api.post("/auth/google", {credentialResponse})
     return response.data;
 }
 

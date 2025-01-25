@@ -7,7 +7,9 @@ router.post('/register', createUploadMiddleware("users_pictures"), (req, res, ne
     console.log("Multer processed file:", req.file);
     console.log("Request body:", req.body);
     next();
-}, authController.register); router.post('/login', authController.login);
+}, authController.register); 
+router.post('/login', authController.login);
+router.post('/google', authController.googleSignIn);
 router.post('/logout', authController.logout);
 router.post('/refresh', authController.refresh);
 

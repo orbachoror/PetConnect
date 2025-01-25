@@ -39,7 +39,7 @@ const PostsPage: React.FC = () => {
   }
 
   return (
-    <Container>
+    <Container sx={{ textAlign: "center" }}>
       <PostsGrid
         posts={posts}
         userId={userId}

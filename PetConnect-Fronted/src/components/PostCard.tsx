@@ -68,8 +68,6 @@ const PostCard: React.FC<PostCardProps> = ({
         <Typography
           sx={{
             cursor: "pointer",
-            justifyContent: "space-between",
-            display: "flex",
           }}
           variant="h6"
           onClick={() => onClick(id)}

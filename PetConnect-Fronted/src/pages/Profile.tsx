@@ -127,6 +127,7 @@ const Profile: React.FC = () => {
           borderRadius: 4,
           minHeight: "100%",
           backgroundColor: "#ffffff",
+          width: "70%",
         }}
       >
         {isEditMode ? (
@@ -154,7 +155,7 @@ const Profile: React.FC = () => {
           padding: 4,
           borderRadius: 4,
           backgroundColor: "#ffffff",
-          minHeight: "100%",
+          width: "70%",
         }}
       >
         <Box sx={{ paddingY: 2, textAlign: "center" }}>

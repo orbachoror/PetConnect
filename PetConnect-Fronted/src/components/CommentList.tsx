@@ -80,7 +80,9 @@ const CommentList: React.FC<commentListProps> = ({
               <Button onClick={handleCancelClick}>Cancel</Button>
             </Box>
           ) : (
-            <Typography variant="body1">{comment.content}</Typography>
+            <Typography variant="body1" textAlign={"left"}>
+              {comment.content}
+            </Typography>
           )}
         </Box>
       ))}

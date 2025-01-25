@@ -205,8 +205,19 @@ const PostPage: React.FC = () => {
   const isLiked = post.likedBy.includes(userId);
   const isOwner = post.owner._id === userId;
   return (
-    <Container>
-      <Box mt={4}>
+    <Container sx={{ textAlign: "center" }}>
+      <Box
+        mt={4}
+        sx={{
+          maxWidth: "800px", // Limit width of the post page
+          margin: "0 auto", // Center horizontally
+          padding: 4,
+          backgroundColor: "#fff",
+          borderRadius: "12px",
+          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+          textAlign: "center",
+        }}
+      >
         {editMode ? (
           <Box
             sx={{
@@ -280,7 +291,7 @@ const PostPage: React.FC = () => {
             </Button>
             <Button
               variant="outlined"
-              color="secondary"
+              color="error"
               onClick={() => setEditMode(false)}
             >
               Cancel
@@ -294,7 +305,15 @@ const PostPage: React.FC = () => {
             <Typography variant="subtitle1" color="textSecondary">
               By: {post.owner.email}
             </Typography>
-            <Typography variant="body1" gutterBottom>
+            <Typography
+              variant="body1"
+              sx={{
+                whiteSpace: "pre-line",
+                textAlign: "left",
+                lineHeight: 1.4,
+                marginBottom: 3,
+              }}
+            >
               {post.description}
             </Typography>
             <Button

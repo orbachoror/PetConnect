@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Container, Typography, TextField, Button, Box } from '@mui/material';
 import { useAuth } from '../hooks/Auth';
 import { useNavigate } from 'react-router-dom';
+import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
+
 
 const Login: React.FC = () => {
-  const { login } = useAuth();
+  const { login,loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -18,6 +20,21 @@ const Login: React.FC = () => {
       console.error('Login failed:', error);
       alert('Invalid credentials or server error.');
     }
+  };
+ 
+  const onGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
+    try{
+      const res= await loginWithGoogle(credentialResponse);
+      navigate('/');
+      console.log(res);
+    }catch(error){
+      console.error('Google login failed:', error);
+      alert('Google login failed');
+    }
+  };
+
+  const onGoogleLoginError = () => {
+    console.error('Google login error');
   };
 
   return (
@@ -45,6 +62,7 @@ const Login: React.FC = () => {
             type="password"
           />
           <Box mt={2}>
+            <GoogleLogin onSuccess={onGoogleLoginSuccess} onError={onGoogleLoginError}></GoogleLogin>
             <Button type="submit" variant="contained" color="primary" fullWidth>
               Login
             </Button>

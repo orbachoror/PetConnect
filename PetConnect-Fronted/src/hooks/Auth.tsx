@@ -6,9 +6,10 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { loginApi, logoutApi } from "../services/authApi";
+import { loginApi, logoutApi,googleSignIn } from "../services/authApi";
 import { getUser } from "../services/userApi";
 import { SenteziedUserType, UserType } from "../types/User";
+import { CredentialResponse } from "@react-oauth/google";
 
 interface AuthContextProps {
   currentUser: SenteziedUserType | null;
@@ -17,6 +18,7 @@ interface AuthContextProps {
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
   updateUser: (updatedUser: SenteziedUserType | null) => void;
+  loginWithGoogle: (credentialResponse: CredentialResponse) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
@@ -54,8 +56,18 @@ export const AuthProvider: FC<{ children: React.ReactNode }> = ({
     const { name, email, phone, address, dateOfBirth, profilePicture } = user;
     return { name, email, phone, address, dateOfBirth, profilePicture };
   };
+
   const login = async (email: string, password: string) => {
     const { accessToken, user, refreshToken } = await loginApi(email, password);
+    localStorage.setItem("accessToken", accessToken);
+    localStorage.setItem("userId", user._id);
+    localStorage.setItem("refreshToken", refreshToken);
+    setCurrentUser(sanitizeUser(user));
+    setIsAuthenticated(true);
+  };
+
+  const loginWithGoogle = async (credentialResponse: CredentialResponse) => {
+    const {accessToken, user, refreshToken}=await googleSignIn(credentialResponse);
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("userId", user._id);
     localStorage.setItem("refreshToken", refreshToken);
@@ -83,6 +95,8 @@ export const AuthProvider: FC<{ children: React.ReactNode }> = ({
         currentUser,
         updateUser,
         isLoading,
+        loginWithGoogle
+
       }}
     >
       {children}

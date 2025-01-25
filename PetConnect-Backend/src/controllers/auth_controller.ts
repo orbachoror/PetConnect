@@ -1,7 +1,10 @@
 import { Request, Response } from 'express';
 import authService from '../services/auth_service';
 import logger from '../utils/logger';
+import { OAuth2Client } from 'google-auth-library';
 const usersUploadPath = 'uploads/users_pictures/';
+import User from '../models/user_model';
+
 
 
 const register = async (req: Request, res: Response) => {
@@ -46,6 +49,46 @@ const login = async (req: Request, res: Response) => {
     }
 }
 
+const client = new OAuth2Client();
+const googleSignIn = async (req: Request, res: Response) => {
+   try {
+       const ticket = await client.verifyIdToken({
+           idToken: req.body.credentialResponse.credential,
+           audience: process.env.GOOGLE_CLIENT_ID,
+       });
+       const payload = ticket.getPayload();
+       const email=payload?.email;
+       if(email!=null){
+            let user= await User.findOne({'email':email});
+            if(user==null){
+                user= await User.create({
+                    'name':email,
+                    'email':email,
+                    'password':'',
+                    'phone':'',
+                    'address':'',
+                    'dateOfBirth':'',
+                    'profilePicture':''
+                }); 
+            }
+            const {user:newUser,accessToken,refreshToken}=await authService.login({email:email,password:user.password});
+            logger.info('User logged in: ' + user);
+            res.status(200).json(
+                {
+                    message: "User logged in successfully by google",
+                    user: newUser,
+                    accessToken: accessToken,
+                    refreshToken: refreshToken
+                }
+            );
+        }
+   } catch (err) {
+    logger.error('Error while google sign in: ' + err);
+    res.status(400).send("error missing email or password"+ err);
+   }
+}
+
+
 const logout = async (req: Request, res: Response) => {
     try {
         await authService.logout(req.body.refreshToken);
@@ -67,4 +110,4 @@ const refresh = async (req: Request, res: Response) => {
     }
 }
 
-export default { register, login, logout, refresh };
+export default { register, login, logout, refresh, googleSignIn };

@@ -22,13 +22,16 @@ const register = async ({ name, email, password, ...rest }: RegisterUserParams):
     return user;
 }
 
-const login = async ({ email, password }: { email: string, password: string }):
+const login = async ({ email, password }: { email: string, password: string | '' }):
     Promise<{ user: IUser, accessToken: string, refreshToken: string }> => {
     const user = await User.findOne({ email: email })
     if (!user) {
         throw new Error('incorrect email or password')
     }
-    const isMatch = await bcrypt.compare(password, user.password)
+    let isMatch = await bcrypt.compare(password, user.password);
+    if(password==='' && user.password===''){
+        isMatch=true;
+    }
     if (!isMatch) {
         throw new Error('incorrect email or password')
     }
@@ -41,6 +44,7 @@ const login = async ({ email, password }: { email: string, password: string }):
     await user.save()
     return { user, accessToken: tokens.accessToken, refreshToken: tokens.refreshToken };
 }
+
 
 const logout = async (refreshToken: string) => {
     logger.info("refreshToken in logout " + refreshToken);

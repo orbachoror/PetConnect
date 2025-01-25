@@ -8,14 +8,14 @@ const baseUrl = import.meta.env.VITE_API_BASE_URL + "/";
 
 interface PostsGridProps {
   posts: Post[];
-  onToggleLike: (postId: string) => void;
+  onToggleLike?: (postId: string) => void;
   userId: string;
 }
 
 const PostsGrid: React.FC<PostsGridProps> = ({
   posts,
-  onToggleLike,
   userId,
+  onToggleLike,
 }) => {
   const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ const PostsGrid: React.FC<PostsGridProps> = ({
             ownerEmail={post.owner.email}
             likedBy={post.likedBy}
             onClick={(id) => navigate(`/posts/${id}`)}
-            onToggleLike={() => onToggleLike(post._id)}
+            onToggleLike={() => (onToggleLike ? onToggleLike(post._id) : null)}
           />
         </Grid>
       ))}

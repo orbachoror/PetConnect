@@ -41,40 +41,47 @@ const CommentList: React.FC<commentListProps> = ({
           borderColor="grey.300"
           borderRadius="8px"
         >
-          <Typography variant="body2" color="textSecondary">
-            {comment.owner.email}
-            {userId && comment.owner._id === userId && (
-              <>
-                {editMode === comment._id ? (
-                  <>
-                    <TextField
-                      fullWidth
-                      value={updatedComment}
-                      onChange={(e) => setUpdatedComment(e.target.value)}
-                    />
-                    <Button onClick={() => handleSaveClick(comment._id)}>
-                      Save
-                    </Button>
-                    <Button onClick={handleCancelClick}>Cancel</Button>
-                  </>
-                ) : (
-                  <>
-                    <Button onClick={() => onDeleteClick(comment._id)}>
-                      Delete
-                    </Button>
-                    <Button
-                      onClick={() =>
-                        handleEditClick(comment._id, comment.content)
-                      }
-                    >
-                      Edit
-                    </Button>
-                    <Typography variant="body1">{comment.content}</Typography>
-                  </>
-                )}
-              </>
-            )}
-          </Typography>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography variant="body2" color="textSecondary">
+              {comment.owner.email}
+            </Typography>
+
+            {userId &&
+              comment.owner._id === userId &&
+              editMode !== comment._id && (
+                <Box>
+                  <Button
+                    onClick={() =>
+                      handleEditClick(comment._id, comment.content)
+                    }
+                  >
+                    Edit
+                  </Button>
+                  <Button onClick={() => onDeleteClick(comment._id)}>
+                    Delete
+                  </Button>
+                </Box>
+              )}
+          </Box>
+          {userId &&
+          comment.owner._id === userId &&
+          editMode === comment._id ? (
+            <Box>
+              <TextField
+                fullWidth
+                value={updatedComment}
+                onChange={(e) => setUpdatedComment(e.target.value)}
+              />
+              <Button onClick={() => handleSaveClick(comment._id)}>Save</Button>
+              <Button onClick={handleCancelClick}>Cancel</Button>
+            </Box>
+          ) : (
+            <Typography variant="body1">{comment.content}</Typography>
+          )}
         </Box>
       ))}
     </Box>

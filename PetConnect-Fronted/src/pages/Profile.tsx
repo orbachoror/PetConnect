@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Box, Grid, Paper } from "@mui/material";
+import { Box, Paper, Typography } from "@mui/material";
 import DetailsForm from "../components/ProfileDetailes";
 import EditForm from "../components/ProfileEditForm";
 import api from "../services/api";
 import { SenteziedUserType } from "../types/User";
 import { useAuth } from "../hooks/Auth";
+import usePosts from "../hooks/usePosts";
+import Loader from "../components/Loader";
+import PostsGrid from "../components/PostsGrid";
 
 const Profile: React.FC = () => {
   const [userDetails, setUserDetails] = useState<SenteziedUserType>(
@@ -13,6 +16,10 @@ const Profile: React.FC = () => {
   const [cancelEdit, setCancelEdit] = useState<SenteziedUserType>(
     {} as SenteziedUserType
   );
+  const userId = localStorage.getItem("userId");
+  const { posts, loading } = usePosts(userId!);
+  console.log("posts", posts);
+
   const [isEditMode, setIsEditMode] = useState(false);
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
@@ -102,67 +109,82 @@ const Profile: React.FC = () => {
     <Box
       sx={{
         display: "flex",
-        justifyContent: "center",
-        alignItems: "start",
+        flexDirection: "column", // Stack items vertically
+        alignItems: "center", // Center align both sections horizontally
         minHeight: "100vh",
         backgroundColor: "#f0f4f8",
         padding: 4,
-        gap: 2,
+        gap: 4, // Space between the sections
         marginTop: 2,
       }}
     >
-      <Grid container spacing={4} sx={{ maxWidth: "1900px", width: "100%" }}>
-        <Grid item xs={12} md={4}>
-          <Paper
-            elevation={5}
-            sx={{
-              padding: 4,
-              borderRadius: 4,
-              minHeight: "100%",
-              backgroundColor: "#ffffff",
-            }}
-          >
-            {isEditMode ? (
-              <EditForm
-                userDetails={userDetails}
-                setUserDetails={setUserDetails}
-                onPictureChange={handlePictureChange}
-                preview={preview}
-                onSave={handleSave}
-                onCancel={handleCancel}
-                baseUrl={baseUrl}
-              />
-            ) : (
-              <DetailsForm
-                userDetails={userDetails}
-                baseUrl={baseUrl}
-                preview={preview}
-                onEdit={() => setIsEditMode(true)}
-              />
-            )}
-          </Paper>
-        </Grid>
-
-        <Grid item xs={12} md={8}>
-          <Paper
-            elevation={3}
-            sx={{
-              padding: 4,
-              borderRadius: 4,
-              backgroundColor: "#ffffff",
-              minHeight: "100%",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <Box sx={{ textAlign: "center" }}>
-              <h2 style={{ color: "#1976d2" }}>User Posts</h2>
-              <p style={{ color: "#6b7280" }}>No posts available yet...</p>
+      <Paper
+        elevation={5}
+        sx={{
+          padding: 4,
+          borderRadius: 4,
+          minHeight: "100%",
+          backgroundColor: "#ffffff",
+        }}
+      >
+        {isEditMode ? (
+          <EditForm
+            userDetails={userDetails}
+            setUserDetails={setUserDetails}
+            onPictureChange={handlePictureChange}
+            preview={preview}
+            onSave={handleSave}
+            onCancel={handleCancel}
+            baseUrl={baseUrl}
+          />
+        ) : (
+          <DetailsForm
+            userDetails={userDetails}
+            baseUrl={baseUrl}
+            preview={preview}
+            onEdit={() => setIsEditMode(true)}
+          />
+        )}
+      </Paper>
+      <Paper
+        elevation={3}
+        sx={{
+          padding: 4,
+          borderRadius: 4,
+          backgroundColor: "#ffffff",
+          minHeight: "100%",
+        }}
+      >
+        <Box sx={{ paddingY: 2, textAlign: "center" }}>
+          <Typography variant="h4" gutterBottom color="primary">
+            User Posts
+          </Typography>
+          {loading ? (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              minHeight="200px"
+            >
+              <Loader />
             </Box>
-          </Paper>
-        </Grid>
-      </Grid>
+          ) : posts.length === 0 ? (
+            <Box
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+              minHeight="200px"
+              border="1px solid green"
+            >
+              <Typography variant="body1" color="textSecondary">
+                No Posts Yet
+              </Typography>
+            </Box>
+          ) : (
+            <PostsGrid posts={posts} userId={userId!} />
+          )}
+        </Box>
+      </Paper>
     </Box>
   );
 };

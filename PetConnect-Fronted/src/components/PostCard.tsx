@@ -21,7 +21,7 @@ interface PostCardProps {
   id: string;
   userId: string;
   onClick: (id: string) => void;
-  onToggleLike: () => void;
+  onToggleLike?: () => void;
 }
 
 const PostCard: React.FC<PostCardProps> = ({
@@ -41,11 +41,11 @@ const PostCard: React.FC<PostCardProps> = ({
   return (
     <Card
       sx={{
-        maxWidth: 250,
+        maxWidth: 300,
+        height: 400,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        height: "100%",
         margin: "16px",
       }}
     >
@@ -54,7 +54,7 @@ const PostCard: React.FC<PostCardProps> = ({
           component="img"
           image={postPicture}
           alt={title}
-          sx={{ cursor: "pointer" }}
+          sx={{ cursor: "pointer", height: 180, objectFit: "contain" }}
           onClick={() => onClick(id)}
         />
       )}
@@ -100,12 +100,19 @@ const PostCard: React.FC<PostCardProps> = ({
           mt="auto"
         >
           <Box display="flex" alignItems="center">
-            <IconButton onClick={onToggleLike}>
+            {onToggleLike ? (
+              <IconButton onClick={onToggleLike}>
+                <FavoriteIcon
+                  color={isLiked ? "error" : "disabled"}
+                  sx={{ mr: 1 }}
+                />
+              </IconButton>
+            ) : (
               <FavoriteIcon
                 color={isLiked ? "error" : "disabled"}
                 sx={{ mr: 1 }}
               />
-            </IconButton>
+            )}
             <Typography variant="body2">{likes}</Typography>
           </Box>
           <Box display="flex" alignItems="center">

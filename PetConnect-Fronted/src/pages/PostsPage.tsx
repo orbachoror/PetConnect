@@ -1,12 +1,12 @@
 import React from "react";
 import { Container } from "@mui/material";
 import PostsGrid from "../components/PostsGrid";
-import usePostsWithComments from "../hooks/usePosts";
+import usePosts from "../hooks/usePosts";
 import { toggleLike } from "../services/postApi";
 import Loader from "../components/Loader";
 
 const PostsPage: React.FC = () => {
-  const { posts, loading, setPosts } = usePostsWithComments();
+  const { posts, loading, setPosts } = usePosts();
   const userId = localStorage.getItem("userId") || "";
   const handleToggleLike = async (postId: string) => {
     if (!userId) {
@@ -42,8 +42,8 @@ const PostsPage: React.FC = () => {
     <Container>
       <PostsGrid
         posts={posts}
-        onToggleLike={handleToggleLike}
         userId={userId}
+        onToggleLike={handleToggleLike}
       />
     </Container>
   );

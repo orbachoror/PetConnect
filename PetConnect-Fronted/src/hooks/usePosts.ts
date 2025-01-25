@@ -1,18 +1,19 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { getPosts } from "../services/postApi";
 import { getCommentsCount } from "../services/commentApi";
 import { Post } from "../types/Post";
 
-const usePostsWithComments = () => {
+const usePosts = (userId?: string) => {
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchPostsWithComments = async () => {
+    const fetchPostsWithComments = useCallback(async () => {
         try {
             const posts = await getPosts();
+            const filteredPosts = userId ? posts.filter((post: Post) => post.owner._id === userId) : posts;
 
             const updatedPosts = await Promise.all(
-                posts.map(async (post: Post) => {
+                filteredPosts.map(async (post: Post) => {
                     const commentsCount = await getCommentsCount(post._id);
                     return { ...post, commentsCount };
                 })
@@ -25,13 +26,13 @@ const usePostsWithComments = () => {
         } finally {
             setLoading(false);
         }
-    };
+    }, [userId]);
 
     useEffect(() => {
         fetchPostsWithComments();
-    }, []);
+    }, [fetchPostsWithComments]);
 
     return { posts, loading, setPosts };
 };
 
-export default usePostsWithComments;
+export default usePosts;

@@ -42,7 +42,7 @@ export class BaseController<T> {
 
     async createItem(req: Request, res: Response) {
         try {
-            const data = await baseServices.createItem(this.model, req);
+            const data = await baseServices.createItem(this.model, req, this.populateOptions);
             logger.info("BaseController Create Item success");
             res.status(200).send(data);
         } catch (err) {
@@ -60,11 +60,11 @@ export class BaseController<T> {
             return;
         }
         try {
-            const data = await baseServices.updateItem(this.model, id?.toString(), updateData);
+            const data = await baseServices.updateItem(this.model, id?.toString(), updateData, this.populateOptions);
             if (!data) {
                 res.status(404).send("Not Found");
             }
-            logger.info("BaseController Update Item success ");
+            logger.info("BaseController Update Item success " + data);
             res.status(200).json(data);
         } catch (err) {
             logger.error("BaseController Update Item failed ");

@@ -9,16 +9,11 @@ import { useAuth } from "./hooks/Auth";
 import ProfilePage from "./pages/Profile";
 import CreatePostPage from "./pages/CreatePostPage";
 import PostPage from "./pages/PostPage";
-import { CircularProgress, Container } from "@mui/material";
-
+import Loader from "./components/Loader";
 function App() {
   const { isLoading } = useAuth();
   if (isLoading) {
-    return (
-      <Container>
-        <CircularProgress />
-      </Container>
-    );
+    return <Loader />;
   }
   return (
     <Router>
@@ -31,7 +26,7 @@ function App() {
         <Route path="/events" element={<EventsPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/create-post" element={<CreatePostPage />} />
-        <Route path="/posts/:id" element={<PostPage />} />
+        <Route path="/posts/:postId" element={<PostPage />} />
       </Routes>
     </Router>
   );

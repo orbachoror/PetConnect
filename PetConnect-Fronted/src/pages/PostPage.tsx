@@ -9,7 +9,12 @@ import {
 } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { getPostById, toggleLike } from "../services/postApi";
-import { getCommentsByPostId, createComment } from "../services/commentApi";
+import {
+  getCommentsByPostId,
+  createComment,
+  deleteComment,
+  updateComment,
+} from "../services/commentApi";
 import CommentList from "../components/CommentList";
 import { useParams } from "react-router-dom";
 import { Post } from "../types/Post";
@@ -17,7 +22,7 @@ import { Comment } from "../types/Comment";
 const baseUrl = import.meta.env.VITE_API_BASE_URL + "/";
 
 const PostPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
+  const { postId } = useParams<{ postId: string }>();
 
   const [post, setPost] = useState<Post | null>(null);
   const [loading, setLoading] = useState(true);
@@ -27,25 +32,25 @@ const PostPage: React.FC = () => {
 
   const fetchPost = useCallback(async () => {
     try {
-      if (!id) return;
-      const postData = await getPostById(id);
+      if (!postId) return;
+      const postData = await getPostById(postId);
       setPost(postData);
     } catch (error) {
       console.error("Failed to fetch post:", error);
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [postId]);
 
   const fetchComments = useCallback(async () => {
     try {
-      if (!id) return;
-      const commentsData = await getCommentsByPostId(id);
+      if (!postId) return;
+      const commentsData = await getCommentsByPostId(postId);
       setComments(commentsData);
     } catch (error) {
       console.error("Failed to fetch comments:", error);
     }
-  }, [id]);
+  }, [postId]);
 
   const handleToggleLike = async () => {
     if (!post) return;
@@ -66,6 +71,25 @@ const PostPage: React.FC = () => {
       console.error("Failed to toggle like:", error);
     }
   };
+  const handleDeleteComment = async (commentId: string) => {
+    try {
+      await deleteComment(commentId, postId!);
+      setComments((prev) => prev.filter((c) => c._id !== commentId));
+    } catch (error) {
+      console.error("Failed to delete comment:", error);
+    }
+  };
+
+  const handleUpdateComment = async (commentId: string, newComment: string) => {
+    try {
+      const updatedComment = await updateComment(commentId, postId, newComment);
+      setComments((prev) =>
+        prev.map((c) => (c._id === commentId ? updatedComment : c))
+      );
+    } catch (error) {
+      console.error("Failed to update comment:", error);
+    }
+  };
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,10 +99,9 @@ const PostPage: React.FC = () => {
     }
     if (!newComment.trim()) return;
     try {
-      const comment = await createComment(id!, newComment);
+      const comment = await createComment(postId!, newComment);
       setComments((prev) => [...prev, comment]);
       setNewComment("");
-      fetchComments();
     } catch (error) {
       console.error("Failed to add comment:", error);
     }
@@ -89,7 +112,7 @@ const PostPage: React.FC = () => {
     fetchComments();
   }, [fetchPost, fetchComments]);
 
-  if (!id) {
+  if (!postId) {
     return (
       <Container>
         <Typography variant="h5" color="error">
@@ -156,7 +179,11 @@ const PostPage: React.FC = () => {
         <Typography variant="h5" gutterBottom>
           Comments ({comments.length})
         </Typography>
-        <CommentList comments={comments} />
+        <CommentList
+          comments={comments}
+          onUpdateClick={handleUpdateComment}
+          onDeleteClick={handleDeleteComment}
+        />
         <Box mt={2} component="form" onSubmit={handleAddComment}>
           <TextField
             label="Add a comment"

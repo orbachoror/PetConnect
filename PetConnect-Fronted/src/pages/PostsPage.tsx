@@ -1,8 +1,9 @@
 import React from "react";
-import { Container, CircularProgress } from "@mui/material";
+import { Container } from "@mui/material";
 import PostsGrid from "../components/PostsGrid";
 import usePostsWithComments from "../hooks/usePosts";
 import { toggleLike } from "../services/postApi";
+import Loader from "../components/Loader";
 
 const PostsPage: React.FC = () => {
   const { posts, loading, setPosts } = usePostsWithComments();
@@ -34,11 +35,7 @@ const PostsPage: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <Container>
-        <CircularProgress />
-      </Container>
-    );
+    return <Loader />;
   }
 
   return (

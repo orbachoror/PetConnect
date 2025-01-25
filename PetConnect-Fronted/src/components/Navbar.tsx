@@ -44,8 +44,8 @@ const NavigationBar: FC = () => {
                 marginRight: 20,
               }}
             />
+            PetConnect
           </Link>
-          PetConnect
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           {isAuthenticated && (
@@ -54,7 +54,6 @@ const NavigationBar: FC = () => {
                 <Button to="/create-post">Create Post</Button>
                 <Button to="/Events">Events</Button>
                 <Button to="/Posts">Posts</Button>
-                <Button to="/Profile">Profile</Button>
                 <Button to="/" onClick={handleLogout}>
                   Logout
                 </Button>
@@ -62,9 +61,12 @@ const NavigationBar: FC = () => {
                   <Typography variant="body1" sx={{ color: "#1976d2" }}>
                     <img
                       src={baseUrl + currentUser?.profilePicture}
+                      alt="Profile"
+                      onClick={() => navigate("/Profile")}
                       style={{
-                        width: 40,
-                        height: 40,
+                        cursor: "pointer",
+                        width: 50,
+                        height: 50,
                         borderRadius: "50%",
                         marginRight: 10,
                       }}

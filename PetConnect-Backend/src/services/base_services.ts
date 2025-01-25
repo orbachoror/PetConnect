@@ -22,23 +22,24 @@ const getById = async <T>(model: Model<T>, id: string, populateOptions?: { path:
     return data;
 }
 
-const createItem = async <T>(model: Model<T>, req: Request) => {
+const createItem = async <T>(model: Model<T>, req: Request, populateOptions?: { path: string, select: string }) => {
     const owner = req.query.userId;
-    const data = await model.create({
+    let data = await model.create({
         ...req.body,
         owner: owner
     });
+    data = populateOptions ? await (data as AnyExpression).populate(populateOptions) : data;
     if (!data) {
         throw new Error('The Item Not Found');
     }
     return data;
 }
 
-const updateItem = async <T>(model: Model<T>, id: string, updateData: AnyExpression) => {
-    const data = await model.findByIdAndUpdate(id, updateData, {
+const updateItem = async <T>(model: Model<T>, id: string, updateData: AnyExpression, populateOptions?: { path: string, select: string }) => {
+    const data = populateOptions ? await model.findByIdAndUpdate(id, updateData, {
         new: true,
         runValidators: true
-    });
+    }).populate(populateOptions) : await model.findByIdAndUpdate(id, updateData);
     if (!data) {
         throw new Error('The Item Not Found');
     }

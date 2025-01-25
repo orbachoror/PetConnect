@@ -19,3 +19,12 @@ export const getCommentsCount = async (postId: string) => {
         throw error;
     }
 };
+export const deleteComment = async (commentId: string, postId: string) => {
+    const response = await api.delete(`posts/${postId}/comments/${commentId}`);
+    return response.data;
+};
+
+export const updateComment = async (commentId: string, postId: string | undefined, content: string) => {
+    const response = await api.put(`posts/${postId}/comments/${commentId}`, { content });
+    return response.data;
+};

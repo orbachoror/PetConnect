@@ -47,8 +47,6 @@ const logout = async (refreshToken: string) => {
     const user = await validateRefreshToken(refreshToken);
     user.refreshTokens = user.refreshTokens?.filter(token => token !== refreshToken);
     await user.save();
-
-
 }
 const refresh = async (refreshToken: string) => {
     if (!refreshToken) {

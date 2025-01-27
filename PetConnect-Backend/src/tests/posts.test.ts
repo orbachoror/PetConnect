@@ -52,7 +52,7 @@ beforeAll(async () => {
     expect(response.status).toBe(200);
     const response2 = await request(app).post('/auth/login').send(testUser);
     expect(response2.status).toBe(200);
-    testUser.id = response2.body._id;
+    testUser.id = response2.body.user._id;
     testUser.accessToken = response2.body.accessToken;
 });
 
@@ -70,9 +70,9 @@ test('Create new post without image', async () => {
     expect(response.status).toBe(200);
     expect(response.body.title).toBe(testPost.title);
     expect(response.body.description).toBe(testPost.description);
-    expect(response.body.owner).toBe(testUser.id);
+    expect(response.body.owner._id).toBe(testUser.id);
     testPost._id = response.body._id;
-    testPost.owner = response.body.owner;
+    testPost.owner = response.body.owner.email;
 });
 
 test('Create new post with image', async () => {
@@ -87,11 +87,11 @@ test('Create new post with image', async () => {
     expect(response.status).toBe(200);
     expect(response.body.title).toBe('testTitle2');
     expect(response.body.description).toBe('testDescription2');
-    expect(response.body.owner).toBe(testUser.id);
+    expect(response.body.owner._id).toBe(testUser.id);
     expect(response.body.postPicture).toBeDefined();
     expect(response.body.postPicture).toContain('uploads/posts_pictures/');
     testPost2._id = response.body._id;
-    testPost2.owner = response.body.owner;
+    testPost2.owner = response.body.owner.email;
     testPost2.postPicture = response.body.postPicture;
     testPost2.title = response.body.title;
     testPost2.description = response.body.description;
@@ -105,9 +105,9 @@ test('Create invalid post', async () => {
 });
 
 test('Get all posts', async () => {
-    const response = await request(app).get('/posts');
+    const response = await request(app).get('/posts?page=2&limit=5');
     expect(response.status).toBe(200);
-    expect(response.body.length).toBe(2);
+    expect(response.body.pagination.totalPosts).toBe(2);
 });
 
 test('Get post by id', async () => {

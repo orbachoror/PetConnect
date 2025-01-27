@@ -10,11 +10,38 @@ class PostsController extends BaseController<IPost> {
         super(PostModel, populateOptions);
     }
 
+    async getAll(req: Request, res: Response): Promise<void> {
+        try{
+            const page = parseInt(req.query.page as string, 10) || 1; //default page 1 , 10  is decimele
+            const limit = parseInt(req.query.limit as string, 10) || 10;  //default limit 10 , 10  is decimele
+
+            const skip =(page-1)*limit; //how many posts to skip 
+            const posts =await PostModel.find()
+            .sort({_id:-1}) //sort by id in descending order
+            .skip(skip)
+            .limit(limit)
+            .populate(populateOptions);
+            const totalPosts =await PostModel.countDocuments();
+
+            res.status(200).json({
+                data:posts,
+                pagination:{
+                    currentPage:page,
+                    totalPages:Math.ceil(totalPosts/limit),
+                    totalPosts:totalPosts
+                },
+            });
+        }catch(error){
+            res.status(500).send("Error getting posts"+error);
+        }
+    }
+
     async createItem(req: Request, res: Response): Promise<void> {
         if (req.file)
             req.body.postPicture = `${postsUploadPath}${req.file.filename}`;
         await super.createItem(req, res);
     };
+
     async updateItem(req: Request, res: Response): Promise<void> {
         if (req.file)
             req.body.postPicture = `${postsUploadPath}${req.file.filename}`;

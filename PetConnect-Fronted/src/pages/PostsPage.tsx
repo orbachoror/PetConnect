@@ -1,12 +1,12 @@
 import React from "react";
-import { Container } from "@mui/material";
+import { Button, Container } from "@mui/material";
 import PostsGrid from "../components/PostsGrid";
 import usePosts from "../hooks/usePosts";
 import { toggleLike } from "../services/postApi";
 import Loader from "../components/Loader";
 
 const PostsPage: React.FC = () => {
-  const { posts, loading, setPosts } = usePosts();
+  const { posts, loading, setPosts ,loadMore , hasMore } = usePosts();
   const userId = localStorage.getItem("userId") || "";
   const handleToggleLike = async (postId: string) => {
     if (!userId) {
@@ -34,7 +34,7 @@ const PostsPage: React.FC = () => {
     }
   };
 
-  if (loading) {
+  if ((loading && posts.length === 0)) {
     return <Loader />;
   }
 
@@ -45,6 +45,22 @@ const PostsPage: React.FC = () => {
         userId={userId}
         onToggleLike={handleToggleLike}
       />
+
+
+      {loading && posts.length > 0 && <Loader />}
+      
+      {hasMore && (
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{ marginTop: 2 }}
+          onClick={loadMore} 
+        >
+        {loading ? "Loading..." : "Load More Posts"}
+        </Button>
+      )}
+
+      {!hasMore && <p>No more posts to load.</p>} 
     </Container>
   );
 };

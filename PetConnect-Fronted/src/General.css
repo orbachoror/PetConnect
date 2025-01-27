@@ -13,6 +13,7 @@
 }
 
 .carousel-item img {
+  position:fixed;
   width: 100%; /* Full width */
   height: 100%; /* Fill the container's height */
   object-fit: cover; /* Ensure the image scales without distortion */

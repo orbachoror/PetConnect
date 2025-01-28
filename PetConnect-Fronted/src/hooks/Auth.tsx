@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useCallback,
 } from "react";
-import { loginApi, logoutApi,googleSignIn } from "../services/authApi";
+import { loginApi, logoutApi, googleSignIn } from "../services/authApi";
 import { getUser } from "../services/userApi";
 import { SenteziedUserType, UserType } from "../types/User";
 import { CredentialResponse } from "@react-oauth/google";
@@ -67,7 +67,9 @@ export const AuthProvider: FC<{ children: React.ReactNode }> = ({
   };
 
   const loginWithGoogle = async (credentialResponse: CredentialResponse) => {
-    const {accessToken, user, refreshToken}=await googleSignIn(credentialResponse);
+    const { accessToken, user, refreshToken } = await googleSignIn(
+      credentialResponse
+    );
     localStorage.setItem("accessToken", accessToken);
     localStorage.setItem("userId", user._id);
     localStorage.setItem("refreshToken", refreshToken);
@@ -83,8 +85,8 @@ export const AuthProvider: FC<{ children: React.ReactNode }> = ({
     setCurrentUser(null);
     setIsAuthenticated(false);
   };
-  const updateUser = (updatedUser: SenteziedUserType | null) => {
-    setCurrentUser(updatedUser);
+  const updateUser = (updatedUser: UserType) => {
+    setCurrentUser(sanitizeUser(updatedUser));
   };
   return (
     <AuthContext.Provider
@@ -95,8 +97,7 @@ export const AuthProvider: FC<{ children: React.ReactNode }> = ({
         currentUser,
         updateUser,
         isLoading,
-        loginWithGoogle
-
+        loginWithGoogle,
       }}
     >
       {children}

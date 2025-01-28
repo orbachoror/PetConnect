@@ -1,0 +1,9 @@
+
+
+###
+POST http://localhost:3000/gemini
+Content-Type: application/json
+
+{
+  "prompt": "tell me about beagle breed dog."
+}

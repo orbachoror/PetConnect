@@ -7,6 +7,13 @@ import {
   Box,
   Grid,
 } from "@mui/material";
+import {
+  validateName,
+  validateEmail,
+  validatePassword,
+  validateDateOfBirth,
+  validatePhone,
+} from "../utils/validationUtils";
 import { useNavigate } from "react-router-dom";
 import { registerApi } from "../services/authApi";
 
@@ -14,19 +21,10 @@ const Register: React.FC = () => {
   const navigate = useNavigate();
 
   // Form state
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    phone: "",
-    address: "",
-    dateOfBirth: "",
-  });
+  const [formData, setFormData] = useState<Record<string, string>>({});
   const [profilePicture, setProfilePicture] = useState<File | null>(null); // State for profile picture
   const [preview, setPreview] = useState<string | null>(null); // State for live preview
-  const [error, setError] = useState("");
-
+  const [errors, setErrors] = useState<Record<string, string>>({});
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -34,18 +32,27 @@ const Register: React.FC = () => {
       ...prevData,
       [name]: value,
     }));
+    let fieldError = "";
+    if (name === "name") fieldError = validateName(value) || "";
+    if (name === "email") fieldError = validateEmail(value) || "";
+    if (name === "password") fieldError = validatePassword(value) || "";
+    if (name === "dateOfBirth") fieldError = validateDateOfBirth(value) || "";
+    if (name === "phone") fieldError = validatePhone(value) || "";
+
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: fieldError,
+    }));
   };
 
-  // Handle file input change for profile picture
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setProfilePicture(file);
-      setPreview(URL.createObjectURL(file)); // Generate a live preview
+      setPreview(URL.createObjectURL(file));
     }
   };
 
-  // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -59,13 +66,22 @@ const Register: React.FC = () => {
       dateOfBirth,
     } = formData;
 
+    const newErrors: Record<string, string> = {};
+    newErrors.name = validateName(name) || "";
+    newErrors.email = validateEmail(email) || "";
+    newErrors.password = validatePassword(password) || "";
+    newErrors.dateOfBirth = validateDateOfBirth(dateOfBirth) || "";
+    newErrors.phone = validatePhone(phone) || "";
+
     if (password !== confirmPassword) {
-      setError("Passwords do not match.");
-      return;
+      newErrors.confirmPassword = "Passwords do not match.";
     }
 
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some((error) => error !== "")) return;
+
     try {
-      // Create FormData
       const formDataPayload = new FormData();
       formDataPayload.append("name", name);
       formDataPayload.append("email", email);
@@ -80,7 +96,10 @@ const Register: React.FC = () => {
       navigate("/login");
     } catch (err: any) {
       console.error("Registration failed:", err);
-      setError(err.response?.data?.message || "Something went wrong.");
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        ["Error"]: err.response?.data?.message,
+      }));
     }
   };
 
@@ -90,9 +109,9 @@ const Register: React.FC = () => {
         <Typography variant="h4" align="center" gutterBottom>
           Create Your Account
         </Typography>
-        {error && (
+        {errors.Error && (
           <Typography variant="body2" color="error" align="center" gutterBottom>
-            {error}
+            {errors.Error}
           </Typography>
         )}
         <form onSubmit={handleSubmit}>
@@ -105,6 +124,8 @@ const Register: React.FC = () => {
                 fullWidth
                 value={formData.name}
                 onChange={handleChange}
+                error={!!errors.name}
+                helperText={errors.name}
                 required
               />
             </Grid>
@@ -116,6 +137,8 @@ const Register: React.FC = () => {
                 fullWidth
                 value={formData.email}
                 onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
                 required
                 type="email"
               />
@@ -128,6 +151,8 @@ const Register: React.FC = () => {
                 fullWidth
                 value={formData.password}
                 onChange={handleChange}
+                error={!!errors.password}
+                helperText={errors.password}
                 required
                 type="password"
               />
@@ -140,6 +165,8 @@ const Register: React.FC = () => {
                 fullWidth
                 value={formData.confirmPassword}
                 onChange={handleChange}
+                error={!!errors.confirmPassword}
+                helperText={errors.confirmPassword}
                 required
                 type="password"
               />
@@ -152,6 +179,8 @@ const Register: React.FC = () => {
                 fullWidth
                 value={formData.phone}
                 onChange={handleChange}
+                error={!!errors.phone}
+                helperText={errors.phone}
                 type="tel"
               />
             </Grid>
@@ -173,6 +202,8 @@ const Register: React.FC = () => {
                 fullWidth
                 value={formData.dateOfBirth}
                 onChange={handleChange}
+                error={!!errors.dateOfBirth}
+                helperText={errors.dateOfBirth}
                 type="date"
                 InputLabelProps={{
                   shrink: true,

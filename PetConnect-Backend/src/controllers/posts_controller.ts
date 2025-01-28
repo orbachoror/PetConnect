@@ -1,4 +1,5 @@
 import PostModel, { IPost } from "../models/posts_model";
+import CommentModel from "../models/comment_model";
 import { Request, Response } from 'express';
 import logger from '../utils/logger';
 import { BaseController } from './base_controller'
@@ -53,6 +54,27 @@ class PostsController extends BaseController<IPost> {
             res.status(500).send("Error toggling like" + error);
         }
     };
+    async deleteItem(req: Request, res: Response): Promise<void> {
+        const postId = req.params.id;
+        if (!postId) {
+            logger.error("Post not found");
+            throw new Error("Post not found");
+        }
+        try {
+            const post = await PostModel.deleteOne({ _id: postId });
+            if (post.deletedCount === 0) {
+                logger.error("Post not found");
+                throw new Error("Post not found");
+            }
+            await CommentModel.deleteMany({ postId: postId });
+            res.status(200).json({ messege: "Post deleted successfully" });
+
+        } catch (error) {
+            logger.error("Error deleting post:" + error);
+            res.status(500).json({ messege: "Error deleting post" + error });
+        }
+    }
+
 }
 
 const postsController = new PostsController();

@@ -25,6 +25,7 @@ import CommentList from "../components/CommentList";
 import { useParams } from "react-router-dom";
 import { Post } from "../types/Post";
 import { Comment } from "../types/Comment";
+import { validateTitle, validateDescription } from "../utils/validationUtils";
 const baseUrl = import.meta.env.VITE_API_BASE_URL + "/";
 
 const PostPage: React.FC = () => {
@@ -39,6 +40,7 @@ const PostPage: React.FC = () => {
   const [updatedDescription, setUpdatedDescription] = useState("");
   const [updatedImage, setUpdatedImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const userId = localStorage.getItem("userId") || "";
   const placeholderImage = "https://placehold.co/600x400?text=Upload+Image";
@@ -143,10 +145,13 @@ const PostPage: React.FC = () => {
 
     try {
       const formData = new FormData();
-      if (!updatedTitle || !updatedDescription) {
-        alert("Title and description are required.");
-        return;
-      }
+      const newErrors: Record<string, string> = {};
+      newErrors.title = validateTitle(updatedTitle) || "";
+      newErrors.description = validateDescription(updatedDescription) || "";
+      setErrors(newErrors);
+
+      if (Object.values(newErrors).some((err) => err)) return;
+      setLoading(true);
       formData.append("title", updatedTitle);
       formData.append("description", updatedDescription);
       if (updatedImage) {
@@ -160,6 +165,8 @@ const PostPage: React.FC = () => {
       setEditMode(false);
     } catch (error) {
       console.error("Failed to update post:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -269,6 +276,9 @@ const PostPage: React.FC = () => {
               fullWidth
               value={updatedTitle}
               onChange={(e) => setUpdatedTitle(e.target.value)}
+              InputLabelProps={{ shrink: !!updatedTitle }}
+              error={!!errors.title}
+              helperText={errors.title}
               sx={{ mb: 2 }}
             />
             <TextField
@@ -279,6 +289,9 @@ const PostPage: React.FC = () => {
               rows={4}
               value={updatedDescription}
               onChange={(e) => setUpdatedDescription(e.target.value)}
+              InputLabelProps={{ shrink: !!updatedDescription }}
+              error={!!errors.description}
+              helperText={errors.description}
               sx={{ mb: 2 }}
             />
             <Button

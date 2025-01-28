@@ -6,33 +6,64 @@ import {
   Typography,
   Box,
   Grid,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { createPost } from "../services/postApi";
 import Loader from "../components/Loader";
+import {
+  generateTitleWithImage,
+  postReleatedToPets,
+} from "../services/geminiApi";
+import { validateDescription, validateTitle } from "../utils/validationUtils";
 
 const CreatePostPage: React.FC = () => {
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-  });
+  const [formData, setFormData] = useState<Record<string, string>>({});
   const [image, setImage] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [uploadOption, setUploadOption] = useState("generate");
 
   const navigate = useNavigate();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+
+    let fieldError = "";
+    if (name === "title") fieldError = validateTitle(value) || "";
+    if (name === "description") fieldError = validateDescription(value) || "";
+
+    setErrors((prev) => ({ ...prev, [name]: fieldError }));
+
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setImage(file);
       setPreview(URL.createObjectURL(file));
+      if (uploadOption === "generate") {
+        try {
+          setLoading(true);
+          const generatedTitle = await generateTitleWithImage(file);
+          const syntheticEvent = {
+            target: {
+              name: "title",
+              value: generatedTitle,
+            },
+          } as React.ChangeEvent<HTMLInputElement>;
+
+          handleInputChange(syntheticEvent);
+        } catch (err) {
+          console.error("Failed to generate title:", err);
+        } finally {
+          setLoading(false);
+        }
+      }
     }
   };
 
@@ -40,28 +71,35 @@ const CreatePostPage: React.FC = () => {
     e.preventDefault();
     const { title, description } = formData;
 
-    if (!title || !description) {
-      setError("Title and description are required.");
-      return;
-    }
+    const newErrors: Record<string, string> = {};
+    newErrors.title = validateTitle(title) || "";
+    newErrors.description = validateDescription(description) || "";
 
+    setErrors(newErrors);
+
+    if (Object.values(newErrors).some((err) => err)) return;
     setLoading(true);
-    setError(null);
 
     try {
+      const isRelatedToPets = await postReleatedToPets(description);
+      if (!isRelatedToPets) {
+        setLoading(false);
+        return alert(
+          "Description is not related to pets. Please provide a valid description."
+        );
+      }
       const formDataPayload = new FormData();
       formDataPayload.append("title", title);
       formDataPayload.append("description", description);
       if (image) formDataPayload.append("image", image);
 
       await createPost(formDataPayload);
-      navigate("/posts"); // Redirect to posts page after successful creation
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message || "Failed to create post.");
-      } else {
-        setError("Failed to create post.");
-      }
+      navigate("/posts");
+    } catch (err: any) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        ["Error"]: err.response?.data?.message,
+      }));
     } finally {
       setLoading(false);
     }
@@ -73,11 +111,32 @@ const CreatePostPage: React.FC = () => {
         <Typography variant="h4" align="center" gutterBottom>
           Create New Post
         </Typography>
-        {error && (
+        {errors.Error && (
           <Typography variant="body2" color="error" align="center" gutterBottom>
-            {error}
+            {errors.Error}
           </Typography>
         )}
+        <Box mb={3}>
+          <Typography variant="subtitle1" gutterBottom>
+            How do you want to upload the picture?
+          </Typography>
+          <RadioGroup
+            value={uploadOption}
+            onChange={(e) => setUploadOption(e.target.value)}
+            row
+          >
+            <FormControlLabel
+              value="generate"
+              control={<Radio />}
+              label="Generate Title With Gemini"
+            />
+            <FormControlLabel
+              value="skip"
+              control={<Radio />}
+              label="Skip Generating Title"
+            />
+          </RadioGroup>
+        </Box>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             {/* Title */}
@@ -88,7 +147,11 @@ const CreatePostPage: React.FC = () => {
                 fullWidth
                 value={formData.title}
                 onChange={handleInputChange}
+                InputLabelProps={{ shrink: !!formData.title }}
+                error={!!errors.title}
+                helperText={errors.title}
                 required
+                disabled={uploadOption === "generate" && loading}
               />
             </Grid>
             {/* Description */}
@@ -101,13 +164,15 @@ const CreatePostPage: React.FC = () => {
                 rows={4}
                 value={formData.description}
                 onChange={handleInputChange}
+                error={!!errors.description}
+                helperText={errors.description}
                 required
               />
             </Grid>
             {/* Image Upload */}
             <Grid item xs={12} textAlign="center">
               <Button variant="contained" component="label">
-                Upload Image
+                {loading ? "Genarating Title..." : "Upload Image"}
                 <input
                   type="file"
                   hidden

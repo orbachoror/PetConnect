@@ -1,6 +1,10 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 
+const apiKey = import.meta.env.VITE_API_GOOGLE_KEY;
+const genAI = new GoogleGenerativeAI(apiKey);
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
 export const generateTitleWithImage = async (file: File): Promise<string> => {
 
     const fileToBase64 = async (file: File): Promise<string> => {
@@ -29,9 +33,6 @@ export const generateTitleWithImage = async (file: File): Promise<string> => {
 };
 
 export const postReleatedToPets = async (descrption: string) => {
-    const apiKey = import.meta.env.VITE_API_GOOGLE_KEY;
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     const prompt = "Return only one word: true if the description im sending you is related to pets or false if not, dont include any other word beside true or false.";
     const result = await model.generateContent([prompt, descrption]);
     return (result.response.text().trim() === "true") ? true : false;

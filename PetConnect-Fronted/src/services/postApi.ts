@@ -1,6 +1,11 @@
 import api from "./api";
-export const getPosts = async () => {
-    const response = await api.get("/posts");
+export const getPosts = async (page:number) => {
+    const response = await api.get("/posts",{
+        params:{
+            page, 
+            limit: 4
+        }
+    });
     return response.data;
 };
 

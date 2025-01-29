@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Paper, Typography } from "@mui/material";
+import { Box, Paper, Typography, Button } from "@mui/material";
 import DetailsForm from "../components/ProfileDetailes";
 import EditForm from "../components/ProfileEditForm";
 import api from "../services/api";
@@ -17,7 +17,7 @@ const Profile: React.FC = () => {
     {} as SenteziedUserType
   );
   const userId = localStorage.getItem("userId");
-  const { posts, loading } = usePosts(userId!);
+  const { posts, loading, setPosts ,loadMore , hasMore } = usePosts(userId!);
   console.log("posts", posts);
 
   const [isEditMode, setIsEditMode] = useState(false);
@@ -157,12 +157,12 @@ const Profile: React.FC = () => {
           backgroundColor: "#ffffff",
           width: "70%",
         }}
-      >
+         >
         <Box sx={{ paddingY: 2, textAlign: "center" }}>
           <Typography variant="h4" gutterBottom color="primary">
             User Posts
           </Typography>
-          {loading ? (
+          {loading && posts.length === 0 ? (
             <Box
               display="flex"
               justifyContent="center"
@@ -184,8 +184,34 @@ const Profile: React.FC = () => {
               </Typography>
             </Box>
           ) : (
-            <PostsGrid posts={posts} userId={userId!} />
-          )}
+            <>
+              <PostsGrid posts={posts} userId={userId!} />
+
+              {loading && posts.length > 0 && <Loader />}
+        
+              {hasMore &&  !loading &&(
+              <Button
+                variant="contained"
+                color="primary"
+                sx={{ marginTop: 2 }}
+                onClick={loadMore} 
+              >
+              Load More Posts
+              </Button>
+            )}
+
+              {!hasMore && !loading && (
+                    <Typography
+                      variant="body1"
+                      color="textSecondary"
+                      textAlign="center"
+                      sx={{ marginTop: 2 }}
+                    >
+                      No more posts to load.
+                    </Typography>
+                  )}  
+            </>
+          )}  
         </Box>
       </Paper>
     </Box>

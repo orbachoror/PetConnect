@@ -62,10 +62,18 @@ const Login: React.FC = () => {
             type="password"
           />
           <Box mt={2}>
-            <GoogleLogin onSuccess={onGoogleLoginSuccess} onError={onGoogleLoginError}></GoogleLogin>
+          <div 
+            style={{
+              marginBottom: '10px',
+              display: 'flex',
+              justifyContent: 'center',
+              }}>
+              <GoogleLogin onSuccess={onGoogleLoginSuccess} onError={onGoogleLoginError}></GoogleLogin>
+            </div>
             <Button type="submit" variant="contained" color="primary" fullWidth>
               Login
             </Button>
+            
           </Box>
         </form>
       </Box>

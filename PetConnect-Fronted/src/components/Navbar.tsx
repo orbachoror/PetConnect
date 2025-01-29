@@ -26,7 +26,6 @@ const NavigationBar: FC = () => {
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          maxWidth: "2000px",
         }}
       >
         <Typography

@@ -106,6 +106,19 @@ const CreatePostPage: React.FC = () => {
   };
 
   return (
+    <Box
+        sx={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(to right, rgb(145, 145, 145), #ffffff)",
+        }}
+      >
     <Container maxWidth="sm">
       <Box mt={4}>
         <Typography variant="h4" align="center" gutterBottom>
@@ -210,6 +223,7 @@ const CreatePostPage: React.FC = () => {
         </form>
       </Box>
     </Container>
+    </Box>
   );
 };
 

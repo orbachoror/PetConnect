@@ -17,7 +17,7 @@ const Profile: React.FC = () => {
     {} as SenteziedUserType
   );
   const userId = localStorage.getItem("userId");
-  const { posts, loading, setPosts ,loadMore , hasMore } = usePosts(userId!);
+  const { posts, loading,loadMore , hasMore } = usePosts(userId!);
   console.log("posts", posts);
 
   const [isEditMode, setIsEditMode] = useState(false);
@@ -114,10 +114,9 @@ const Profile: React.FC = () => {
         flexDirection: "column", // Stack items vertically
         alignItems: "center", // Center align both sections horizontally
         minHeight: "100vh",
-        backgroundColor: "#f0f4f8",
+        background: "linear-gradient(to right, rgb(145, 145, 145), #ffffff)",
         padding: 4,
         gap: 4, // Space between the sections
-        marginTop: 2,
       }}
     >
       <Paper

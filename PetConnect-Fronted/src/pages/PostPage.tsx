@@ -212,180 +212,201 @@ const PostPage: React.FC = () => {
   const isLiked = post.likedBy.includes(userId);
   const isOwner = post.owner._id === userId;
   return (
-    <Container sx={{ textAlign: "center" }}>
-      <Box
-        mt={4}
-        sx={{
-          maxWidth: "800px", // Limit width of the post page
-          margin: "0 auto", // Center horizontally
-          padding: 4,
-          backgroundColor: "#fff",
-          borderRadius: "12px",
-          boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+  
+    <Box
+      sx={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(to right, rgb(90, 121, 151), #ffffff)",
+        padding: "100px",
+      }}
+    >
+
+        <Container sx={{ 
           textAlign: "center",
-        }}
-      >
-        {editMode ? (
+          transition: "transform 0.3s ease-in-out",
+          "&:hover": { transform: "scale(1.02)" } 
+          }}>
           <Box
+            mt={4}
             sx={{
-              position: "relative",
-              cursor: "pointer",
-              border: "2px dashed #1976d2",
-              borderRadius: "8px",
-              overflow: "hidden",
-              marginBottom: "16px",
+              maxWidth: "800px", // Limit width of the post page
+              margin: "0 auto", // Center horizontally
+              backgroundColor: "#fff",
+              borderRadius: "12px",
+              boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",
+              textAlign: "center",
+              
             }}
-            onClick={() => document.getElementById("image-input")?.click()}
           >
-            <img
-              src={imagePreview || placeholderImage}
-              alt={updatedTitle}
-              style={{
-                width: "100%",
-                maxHeight: "400px",
-                objectFit: "contain",
-              }}
-            />
-            <input
-              id="image-input"
-              type="file"
-              accept="image/*"
-              style={{ display: "none" }}
-              onChange={handleImageChange}
-            />
+            {editMode ? (
+              <Box
+                sx={{
+                  position: "relative",
+                  cursor: "pointer",
+                  border: "2px dashed #1976d2",
+                  borderRadius: "8px",
+                  overflow: "hidden",
+                  marginBottom: "16px",
+                }}
+                onClick={() => document.getElementById("image-input")?.click()}
+              >
+                <img
+                  src={imagePreview || placeholderImage}
+                  alt={updatedTitle}
+                  style={{
+                    width: "100%",
+                    maxHeight: "400px",
+                    objectFit: "contain",
+                  }}
+                />
+                <input
+                  id="image-input"
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleImageChange}
+                />
+              </Box>
+            ) : (
+              post.postPicture && (
+                <img
+                  src={`${baseUrl}${post.postPicture}`}
+                  alt={post.title}
+                  style={{
+                    width: "100%",
+                    maxHeight: "400px",
+                    objectFit: "contain",
+                    marginBottom: "16px",
+                  }}
+                />
+              )
+            )}
+            {editMode ? (
+              <>
+                <TextField
+                  label="Title"
+                  variant="outlined"
+                  fullWidth
+                  value={updatedTitle}
+                  onChange={(e) => setUpdatedTitle(e.target.value)}
+                  InputLabelProps={{ shrink: !!updatedTitle }}
+                  error={!!errors.title}
+                  helperText={errors.title}
+                  sx={{ mb: 2 }}
+                />
+                <TextField
+                  label="Description"
+                  variant="outlined"
+                  fullWidth
+                  multiline
+                  rows={4}
+                  value={updatedDescription}
+                  onChange={(e) => setUpdatedDescription(e.target.value)}
+                  InputLabelProps={{ shrink: !!updatedDescription }}
+                  error={!!errors.description}
+                  helperText={errors.description}
+                  sx={{ mb: 2 }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleUpdate}
+                  sx={{ mr: 2 }}
+                >
+                  Save
+                </Button>
+                <Button
+                  variant="outlined"
+                  color="error"
+                  onClick={() => setEditMode(false)}
+                >
+                  Cancel
+                </Button>
+              </>
+            ) : (
+              <>
+                <Typography variant="h4" gutterBottom>
+                  {post.title}
+                </Typography>
+                <Typography variant="subtitle1" color="textSecondary">
+                  By: {post.owner.email}
+                </Typography>
+                <Typography
+                  variant="body1"
+                  sx={{
+                    whiteSpace: "pre-line",
+                    textAlign: "center",
+                    lineHeight: 1.4,
+                    marginBottom: 3,
+                  }}
+                >
+                  {post.description}
+                </Typography>
+                <Button
+                  variant="contained"
+                  color={isLiked ? "secondary" : "primary"}
+                  startIcon={<FavoriteIcon />}
+                  onClick={handleToggleLike}
+                >
+                  {isLiked ? "Unlike" : "Like"} ({post.likes})
+                </Button>
+              </>
+            )}
+            {isOwner && !editMode && (
+              <Box mt={4} sx={{ display: "flex", justifyContent: "center" }}>
+                <Button
+                  variant="contained"
+                  color="success"
+                  onClick={() => setEditMode(true)}
+                  sx={{ mr: 2 }}
+                >
+                  Edit Post
+                </Button>
+                <Button variant="contained" color="error" onClick={handleDelete}>
+                  Delete Post
+                </Button>
+              </Box>
+            )}
+            <Box mt={4}>
+              <Typography variant="h5" gutterBottom>
+                Comments ({comments.length})
+              </Typography>
+              <CommentList
+                comments={comments}
+                onUpdateClick={handleUpdateComment}
+                onDeleteClick={handleDeleteComment}
+              />
+              <Box mt={2} component="form" onSubmit={handleAddComment}>
+                <TextField
+                  label="Add a comment"
+                  variant="outlined"
+                  fullWidth
+                  multiline
+                  rows={2}
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                />
+                <Button
+                  type="submit"
+                  variant="contained"
+                  color="primary"
+                  fullWidth
+                  sx={{ mt: 2 }}
+                >
+                  Submit
+                </Button>
+              </Box>
+            </Box>
           </Box>
-        ) : (
-          post.postPicture && (
-            <img
-              src={`${baseUrl}${post.postPicture}`}
-              alt={post.title}
-              style={{
-                width: "100%",
-                maxHeight: "400px",
-                objectFit: "contain",
-                marginBottom: "16px",
-              }}
-            />
-          )
-        )}
-        {editMode ? (
-          <>
-            <TextField
-              label="Title"
-              variant="outlined"
-              fullWidth
-              value={updatedTitle}
-              onChange={(e) => setUpdatedTitle(e.target.value)}
-              InputLabelProps={{ shrink: !!updatedTitle }}
-              error={!!errors.title}
-              helperText={errors.title}
-              sx={{ mb: 2 }}
-            />
-            <TextField
-              label="Description"
-              variant="outlined"
-              fullWidth
-              multiline
-              rows={4}
-              value={updatedDescription}
-              onChange={(e) => setUpdatedDescription(e.target.value)}
-              InputLabelProps={{ shrink: !!updatedDescription }}
-              error={!!errors.description}
-              helperText={errors.description}
-              sx={{ mb: 2 }}
-            />
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleUpdate}
-              sx={{ mr: 2 }}
-            >
-              Save
-            </Button>
-            <Button
-              variant="outlined"
-              color="error"
-              onClick={() => setEditMode(false)}
-            >
-              Cancel
-            </Button>
-          </>
-        ) : (
-          <>
-            <Typography variant="h4" gutterBottom>
-              {post.title}
-            </Typography>
-            <Typography variant="subtitle1" color="textSecondary">
-              By: {post.owner.email}
-            </Typography>
-            <Typography
-              variant="body1"
-              sx={{
-                whiteSpace: "pre-line",
-                textAlign: "left",
-                lineHeight: 1.4,
-                marginBottom: 3,
-              }}
-            >
-              {post.description}
-            </Typography>
-            <Button
-              variant="contained"
-              color={isLiked ? "secondary" : "primary"}
-              startIcon={<FavoriteIcon />}
-              onClick={handleToggleLike}
-            >
-              {isLiked ? "Unlike" : "Like"} ({post.likes})
-            </Button>
-          </>
-        )}
-        {isOwner && !editMode && (
-          <Box mt={4} sx={{ display: "flex", justifyContent: "center" }}>
-            <Button
-              variant="contained"
-              color="success"
-              onClick={() => setEditMode(true)}
-              sx={{ mr: 2 }}
-            >
-              Edit Post
-            </Button>
-            <Button variant="contained" color="error" onClick={handleDelete}>
-              Delete Post
-            </Button>
-          </Box>
-        )}
-        <Box mt={4}>
-          <Typography variant="h5" gutterBottom>
-            Comments ({comments.length})
-          </Typography>
-          <CommentList
-            comments={comments}
-            onUpdateClick={handleUpdateComment}
-            onDeleteClick={handleDeleteComment}
-          />
-          <Box mt={2} component="form" onSubmit={handleAddComment}>
-            <TextField
-              label="Add a comment"
-              variant="outlined"
-              fullWidth
-              multiline
-              rows={2}
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-            />
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              sx={{ mt: 2 }}
-            >
-              Submit
-            </Button>
-          </Box>
-        </Box>
-      </Box>
-    </Container>
+        </Container>
+    </Box>
   );
 };
 

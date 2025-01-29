@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Container } from "@mui/material";
+import { Button, Container,Box } from "@mui/material";
 import PostsGrid from "../components/PostsGrid";
 import usePosts from "../hooks/usePosts";
 import { toggleLike } from "../services/postApi";
@@ -39,6 +39,22 @@ const PostsPage: React.FC = () => {
   }
 
   return (
+
+    <Box
+    sx={{
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      textAlign: "center",
+      backgroundImage: "url('andrew-s-ouo1hbizWwo-unsplash.jpg')", 
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      padding: "40px 0",
+      position: "relative",
+    }}
+  >
     <Container sx={{ textAlign: "center" }}>
       <PostsGrid
         posts={posts}
@@ -62,6 +78,7 @@ const PostsPage: React.FC = () => {
 
       {!hasMore && <p>No more posts to load.</p>} 
     </Container>
+  </Box>
   );
 };
 

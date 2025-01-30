@@ -29,7 +29,9 @@ const testPost: IPost = {
     title: 'testTitle',
     description: 'testDescription',
     likes: 0,
-    likedBy: []
+    likedBy: [],
+    category: 'General',
+    commentCount: 0
 }
 const testComment: IComment = {
     content: 'testContent',

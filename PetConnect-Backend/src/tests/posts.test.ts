@@ -28,19 +28,25 @@ const testPost: IPost = {
     title: 'testTitle',
     description: 'testDescription',
     likes: 0,
-    likedBy: []
+    likedBy: [],
+    category: 'General',
+    commentCount: 0
 }
 const testPost2: IPost = {
     title: 'testTitle2',
     description: 'testDescription2',
     likes: 0,
-    likedBy: []
+    likedBy: [],
+    category: 'General',
+    commentCount: 0
 }
 const invalidPost: IPost = {
     title: 'testInvalidTitle',
     description: '',
     likes: 0,
-    likedBy: []
+    likedBy: [],
+    category: 'General',
+    commentCount: 0
 }
 const imagePath = path.join(__dirname, 'test_image.png')
 beforeAll(async () => {

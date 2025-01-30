@@ -47,15 +47,16 @@ class CommentsController extends BaseController<IComment> {
                 res.status(400).send("post ID is required");
                 return;
             }
+
+            if (req.query.countOnly === "true") {
+                const count = await Comment.countDocuments({ postId });
+                res.status(200).json({ count });
+                return;
+            }
             const post = await base_services.getById(Post, postId);
             if (!post) {
                 logger.error("Cannot find post with id " + postId);
                 res.status(400).send("Cannot find post to comment ");
-                return;
-            }
-            if (req.query.countOnly === "true") {
-                const count = await Comment.countDocuments({ postId });
-                res.status(200).json({ count });
                 return;
             }
 

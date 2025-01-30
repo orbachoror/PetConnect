@@ -9,7 +9,6 @@ import postsRoutes from './routes/posts_routes';
 import eventsRoutes from './routes/events_routes';
 import commentsRoutes from './routes/comments_routes';
 import usersRoutes from './routes/users_routes';
-import geminiRoutes from './routes/gemini_routes';
 import swaggerSpecs from './utils/swagger';
 import cors from 'cors';
 import corsOptions from './utils/cors';
@@ -28,7 +27,6 @@ app.use("/events", eventsRoutes);
 app.use("/posts/:postId/comments", commentsRoutes);
 app.use("/user", usersRoutes);
 app.use('/uploads', express.static(path.join(__dirname, './uploads')));
-app.use('/gemini', geminiRoutes);
 
 
 app.use("/api-docs", swaggerUI.serve, swaggerUI.setup(swaggerSpecs));

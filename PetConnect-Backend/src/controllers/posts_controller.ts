@@ -12,28 +12,71 @@ class PostsController extends BaseController<IPost> {
     }
 
     async getAll(req: Request, res: Response): Promise<void> {
-        try{
-            const page = parseInt(req.query.page as string, 10) || 1; //default page 1 , 10  is decimele
-            const limit = parseInt(req.query.limit as string, 10) || 10;  //default limit 10 , 10  is decimele
+        try {
 
-            const skip =(page-1)*limit; //how many posts to skip 
-            const posts =await PostModel.find()
-            .sort({_id:-1}) //sort by id in descending order
-            .skip(skip)
-            .limit(limit)
-            .populate(populateOptions);
-            const totalPosts =await PostModel.countDocuments();
+            const page = parseInt(req.query.page as string, 10) || 1; // Default page: 1
+            const limit = parseInt(req.query.limit as string, 10) || 10; // Default limit: 10
+            const skip = (page - 1) * limit; // Number of documents to skip
+
+            const category = req.query.category as string; // Filter by category
+            const sortBy = req.query.sortBy as string; // Sort criteria: likes or comments
+            const sortOrder = req.query.sortOrder === "asc" ? 1 : -1; // Ascending or descending, default is descending
+
+            const filter: any = {};
+            if (category && category !== "All") {
+                filter.category = category; // Apply category filter
+            }
+
+            // Build sorting options
+            let sortOptions: any = { _id: -1 }; // Default: sort by newest (ID)
+            if (sortBy === "likes") {
+                sortOptions = { likes: sortOrder }; // Sort by likes
+            }
+
+            let posts = await PostModel.find(filter)
+                .sort(sortOptions)
+                .skip(skip)
+                .limit(limit)
+                .populate("owner", "name email"); // Populate owner fields
+
+            // Handle sorting by comments
+            if (sortBy === "comments") {
+                const commentCounts = await CommentModel.aggregate([
+                    { $group: { _id: "$postId", count: { $sum: 1 } } }
+                ]);
+
+                const commentMap = commentCounts.reduce((acc, item) => {
+                    acc[item._id.toString()] = item.count;
+                    return acc;
+                }, {});
+
+                posts = posts.map((post) => {
+                    const postObj = post.toObject();
+                    return new PostModel({
+                        ...postObj,
+                        commentCount: commentMap[post._id.toString()] || 0
+                    });
+                });
+
+                posts.sort((a, b) =>
+                    sortOrder === 1
+                        ? a.commentCount - b.commentCount
+                        : b.commentCount - a.commentCount
+                );
+            }
+
+            const totalPosts = await PostModel.countDocuments(filter); // Total posts with applied filter
 
             res.status(200).json({
-                data:posts,
-                pagination:{
-                    currentPage:page,
-                    totalPages:Math.ceil(totalPosts/limit),
-                    totalPosts:totalPosts
+                data: posts,
+                pagination: {
+                    currentPage: page,
+                    totalPages: Math.ceil(totalPosts / limit),
+                    totalPosts: totalPosts
                 },
             });
-        }catch(error){
-            res.status(500).send("Error getting posts"+error);
+        } catch (error) {
+            res.status(500).send("Error getting posts" + error);
         }
     }
 

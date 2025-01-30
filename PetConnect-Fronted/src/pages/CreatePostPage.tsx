@@ -9,6 +9,10 @@ import {
   Radio,
   RadioGroup,
   FormControlLabel,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { createPost } from "../services/postApi";
@@ -29,9 +33,19 @@ const CreatePostPage: React.FC = () => {
 
   const navigate = useNavigate();
 
+  const categories = [
+    "General",
+    "Product Recommendations",
+    "Lost & Found",
+    "Health Tips",
+    "Trainer Recommendations",
+    "Training Advice",
+    "Adoption",
+  ];
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
+    console.log("input change select " + name + "  " + value);
     let fieldError = "";
     if (name === "title") fieldError = validateTitle(value) || "";
     if (name === "description") fieldError = validateDescription(value) || "";
@@ -70,7 +84,7 @@ const CreatePostPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const { title, description } = formData;
-
+    const category = formData.category || "General";
     const newErrors: Record<string, string> = {};
     newErrors.title = validateTitle(title) || "";
     newErrors.description = validateDescription(description) || "";
@@ -91,6 +105,8 @@ const CreatePostPage: React.FC = () => {
       const formDataPayload = new FormData();
       formDataPayload.append("title", title);
       formDataPayload.append("description", description);
+      formDataPayload.append("category", category);
+
       if (image) formDataPayload.append("image", image);
 
       await createPost(formDataPayload);
@@ -168,6 +184,27 @@ const CreatePostPage: React.FC = () => {
                 helperText={errors.description}
                 required
               />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth>
+                <InputLabel id="category-select-label">Category</InputLabel>
+                <Select
+                  labelId="category-select-label"
+                  value={formData.category || "General"}
+                  name="category"
+                  onChange={(e) =>
+                    handleInputChange(e as React.ChangeEvent<HTMLInputElement>)
+                  }
+                  label="Category"
+                  required
+                >
+                  {categories.map((cat) => (
+                    <MenuItem key={cat} value={cat}>
+                      {cat}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             {/* Image Upload */}
             <Grid item xs={12} textAlign="center">

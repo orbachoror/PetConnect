@@ -78,3 +78,38 @@ button.carousel-indicators button.active {
 button.carousel-indicators button:hover {
   background-color: rgba(255, 255, 255, 0.8); /* Highlight dots on hover */
 }
+
+.stats-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Align vertically */
+  gap: 20px; /* Space between divs */
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.platform-stats {
+  background-color: #343a40; /* Bootstrap dark background */
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+  width: 250px;
+  height: 250px;
+}
+
+.platform-stats:hover {
+  transform: scale(1.05);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.icon {
+  margin-right: 8px;
+  vertical-align: middle;
+  color: white; /* Adjust the color if needed */
+  font-size: 1.2em; /* Adjust size */
+}

@@ -53,7 +53,7 @@ beforeAll(async () => {
         .post('/auth/login')
         .send(testUser);
     expect(response2.status).toBe(200);
-    testUser._id = response2.body._id;
+    testUser._id = response2.body.user._id;
     testUser.accessToken = response2.body.accessToken;
     const response3 = await request(app)
         .post('/posts')
@@ -83,7 +83,7 @@ test('Create new comment', async () => {
     expect(response.status).toBe(200);
     expect(response.body.content).toBe(testComment.content);
     expect(response.body.postId).toBe(testPost._id);
-    expect(response.body.owner).toBe(testUser._id);
+    expect(response.body.owner._id).toBe(testUser._id);
     const response2 = await request(app)
         .post(`/posts/${testPost._id}/comments`)
         .set({ authorization: "JWT " + testUser.accessToken })

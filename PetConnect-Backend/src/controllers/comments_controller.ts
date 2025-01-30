@@ -48,11 +48,7 @@ class CommentsController extends BaseController<IComment> {
                 return;
             }
 
-            if (req.query.countOnly === "true") {
-                const count = await Comment.countDocuments({ postId });
-                res.status(200).json({ count });
-                return;
-            }
+
             const post = await base_services.getById(Post, postId);
             if (!post) {
                 logger.error("Cannot find post with id " + postId);

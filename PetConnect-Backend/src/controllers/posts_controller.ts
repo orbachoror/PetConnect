@@ -13,72 +13,57 @@ class PostsController extends BaseController<IPost> {
 
     async getAll(req: Request, res: Response): Promise<void> {
         try {
-
-            const page = parseInt(req.query.page as string, 10) || 1; // Default page: 1
-            const limit = parseInt(req.query.limit as string, 10) || 10; // Default limit: 10
-            const skip = (page - 1) * limit; // Number of documents to skip
-
-            const category = req.query.category as string; // Filter by category
-            const sortBy = req.query.sortBy as string; // Sort criteria: likes or comments
-            const sortOrder = req.query.sortOrder === "asc" ? 1 : -1; // Ascending or descending, default is descending
+            const page = parseInt(req.query.page as string, 10) || 1;
+            const limit = parseInt(req.query.limit as string, 10) || 10;
+            const skip = (page - 1) * limit;
+            const category = req.query.category as string;
+            const sortBy = req.query.sortBy as string;
+            const sortOrder = req.query.sortOrder === "asc" ? 1 : -1;
 
             const filter: any = {};
             if (category && category !== "All") {
-                filter.category = category; // Apply category filter
+                filter.category = category;
             }
 
-            // Build sorting options
-            let sortOptions: any = { _id: -1 }; // Default: sort by newest (ID)
+            let sortOptions: any = { _id: -1 }; // Default: newest post first
             if (sortBy === "likes") {
-                sortOptions = { likes: sortOrder }; // Sort by likes
+                sortOptions = { likes: sortOrder };
             }
 
-            let posts = await PostModel.find(filter)
+            const posts = await PostModel.find(filter)
+                .populate("owner", "name email")
                 .sort(sortOptions)
-                .skip(skip)
-                .limit(limit)
-                .populate("owner", "name email"); // Populate owner fields
+                .lean(); // converts Mongoose objects to plain JS objects for better performance
 
-            // Handle sorting by comments
+            // we count the comments for each post and insert it in the post object to be used in the frontend
+            for (const post of posts)
+                post.commentCount = await CommentModel.countDocuments({ postId: post._id });
+
+            // if the sorting is by comments we sort the posts array by the comment count
             if (sortBy === "comments") {
-                const commentCounts = await CommentModel.aggregate([
-                    { $group: { _id: "$postId", count: { $sum: 1 } } }
-                ]);
-
-                const commentMap = commentCounts.reduce((acc, item) => {
-                    acc[item._id.toString()] = item.count;
-                    return acc;
-                }, {});
-
-                posts = posts.map((post) => {
-                    const postObj = post.toObject();
-                    return new PostModel({
-                        ...postObj,
-                        commentCount: commentMap[post._id.toString()] || 0
-                    });
-                });
-
                 posts.sort((a, b) =>
-                    sortOrder === 1
-                        ? a.commentCount - b.commentCount
-                        : b.commentCount - a.commentCount
-                );
+                    (sortOrder === 1 ? a.commentCount - b.commentCount : b.commentCount - a.commentCount));
             }
 
-            const totalPosts = await PostModel.countDocuments(filter); // Total posts with applied filter
+            // we making the pagging here and not right after the find because we need the comment count to be calculated first
+            const paginatedPosts = posts.slice(skip, skip + limit);
+
+            const totalPosts = await PostModel.countDocuments(filter);
 
             res.status(200).json({
-                data: posts,
+                data: paginatedPosts,
                 pagination: {
                     currentPage: page,
                     totalPages: Math.ceil(totalPosts / limit),
-                    totalPosts: totalPosts
+                    totalPosts: totalPosts,
                 },
             });
         } catch (error) {
-            res.status(500).send("Error getting posts" + error);
+            res.status(500).send("Error getting posts: " + error);
         }
     }
+
+
 
     async createItem(req: Request, res: Response): Promise<void> {
         if (req.file)

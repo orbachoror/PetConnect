@@ -1,5 +1,5 @@
 import api from "./api";
-export const getPosts = async (page: number, sortBy?: string, sortOrder: "asc" | "desc" = "desc", category?: string) => {
+export const getPosts = async (page: number, sortBy?: string, sortOrder?: string, category?: string) => {
     const response = await api.get("/posts", {
         params: {
             page,

@@ -41,11 +41,18 @@ const PostCard: React.FC<PostCardProps> = ({
   return (
     <Card
       sx={{
-        maxWidth: 300,
+        maxWidth: 320,
         height: 400,
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
+        borderRadius: "15px",
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+        transition: "transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out",
+        "&:hover": {
+          transform: "scale(1.03)",
+          boxShadow: "0px 6px 20px rgba(0, 0, 0, 0.9)",
+        },
         margin: "16px",
       }}
     >
@@ -54,7 +61,13 @@ const PostCard: React.FC<PostCardProps> = ({
           component="img"
           image={postPicture}
           alt={title}
-          sx={{ cursor: "pointer", height: 180, objectFit: "contain" }}
+          sx={{
+            cursor: "pointer",
+            height: 180,
+            objectFit: "fill",
+            borderTopLeftRadius: "15px",
+            borderTopRightRadius: "15px",
+          }}
           onClick={() => onClick(id)}
         />
       )}
@@ -62,7 +75,7 @@ const PostCard: React.FC<PostCardProps> = ({
         sx={{
           display: "flex",
           flexDirection: "column",
-          flexGrow: 1, // Ensures content stretches to fill available space
+          flexGrow: 1,
         }}
       >
         <Typography

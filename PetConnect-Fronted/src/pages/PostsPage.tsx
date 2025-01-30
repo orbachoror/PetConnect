@@ -4,28 +4,35 @@ import {
   Container,
   Box,
   FormControl,
-  Grid,
   InputLabel,
   MenuItem,
   Select,
   Typography,
+  Paper,
 } from "@mui/material";
 import PostsGrid from "../components/PostsGrid";
 import usePosts from "../hooks/usePosts";
 import { toggleLike } from "../services/postApi";
 import Loader from "../components/Loader";
-
+import { RestartAlt, FlagRounded } from "@mui/icons-material";
+import { useNavigate } from "react-router-dom";
 const PostsPage: React.FC = () => {
-  const [sortBy, setSortBy] = useState<string>("likes");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [sortBy, setSortBy] = useState<string>("");
+  const [sortOrder, setSortOrder] = useState<string>("");
   const [category, setCategory] = useState<string>("All");
-
+  const navigate = useNavigate();
   const { posts, loading, setPosts, loadMore, hasMore } = usePosts(
-    undefined, // userId (not filtering by specific user)
+    undefined,
     sortBy,
     sortOrder,
     category
   );
+  const resetFilters = () => {
+    setSortBy("");
+    setSortOrder("");
+    setCategory("All");
+  };
+
   const userId = localStorage.getItem("userId") || "";
   const handleToggleLike = async (postId: string) => {
     if (!userId) {
@@ -69,70 +76,128 @@ const PostsPage: React.FC = () => {
         backgroundImage: "url('andrew-s-ouo1hbizWwo-unsplash.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
+        backgroundAttachment: "fixed",
         padding: "40px 0",
         position: "relative",
       }}
     >
       <Container sx={{ textAlign: "center" }}>
-        <Grid container spacing={2} sx={{ mb: 4, mt: 1 }}>
-          {/* Sort By */}
-          <Grid item xs={12} sm={4}>
-            <FormControl fullWidth>
-              <InputLabel id="sort-by-label">Sort By</InputLabel>
-              <Select
-                labelId="sort-by-label"
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-              >
-                <MenuItem value="likes">Most Liked</MenuItem>
-                <MenuItem value="comments">Most Commented</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          {/* Sort Order */}
-          <Grid item xs={12} sm={4}>
-            <FormControl fullWidth>
-              <InputLabel id="sort-order-label">Sort Order</InputLabel>
-              <Select
-                labelId="sort-order-label"
-                value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value as "asc" | "desc")}
-              >
-                <MenuItem value="asc">Ascending</MenuItem>
-                <MenuItem value="desc">Descending</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-          {/* Category */}
-          <Grid item xs={12} sm={4}>
-            <FormControl fullWidth>
-              <InputLabel id="category-label">Category</InputLabel>
-              <Select
-                labelId="category-label"
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-              >
-                <MenuItem value="All">All</MenuItem>
-                <MenuItem value="General">General</MenuItem>
-                <MenuItem value="Product Recommendations">
-                  Product Recommendations
-                </MenuItem>
-                <MenuItem value="Lost & Found">Lost & Found</MenuItem>
-                <MenuItem value="Health Tips">Health Tips</MenuItem>
-                <MenuItem value="Trainer Recommendations">
-                  Trainer Recommendations
-                </MenuItem>
-                <MenuItem value="Training Advice">Training Advice</MenuItem>
-                <MenuItem value="Adoption">Adoption</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
-        </Grid>
+        <Typography variant="h4" fontWeight="bold" mb={3} color="black">
+          Browse Posts
+        </Typography>
+        <Paper
+          elevation={6}
+          sx={{
+            backgroundColor: "rgba(255, 255, 255, 0.1)", // Transparent effect
+            backdropFilter: "blur(7px)", // Glassmorphism effect
+            padding: 2,
+            borderRadius: "12px",
+            display: "flex",
+            flexWrap: "wrap",
+            justifyContent: "center",
+            gap: 2,
+            mb: 4,
+          }}
+        >
+          <FormControl sx={{ minWidth: 160 }}>
+            <InputLabel id="sort-by-label">Sort By</InputLabel>
+            <Select
+              labelId="sort-by-label"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <MenuItem value="likes">Most Liked</MenuItem>
+              <MenuItem value="comments">Most Commented</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl sx={{ minWidth: 160 }}>
+            <InputLabel id="sort-order-label">Sort Order</InputLabel>
+            <Select
+              labelId="sort-order-label"
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+            >
+              <MenuItem value="asc">Ascending</MenuItem>
+              <MenuItem value="desc">Descending</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl sx={{ minWidth: 160 }}>
+            <InputLabel id="category-label">Category</InputLabel>
+            <Select
+              labelId="category-label"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              <MenuItem value="All">All</MenuItem>
+              <MenuItem value="General">General</MenuItem>
+              <MenuItem value="Product Recommendations">
+                Product Recommendations
+              </MenuItem>
+              <MenuItem value="Lost & Found">Lost & Found</MenuItem>
+              <MenuItem value="Health Tips">Health Tips</MenuItem>
+              <MenuItem value="Trainer Recommendations">
+                Trainer Recommendations
+              </MenuItem>
+              <MenuItem value="Training Advice">Training Advice</MenuItem>
+              <MenuItem value="Adoption">Adoption</MenuItem>
+            </Select>
+          </FormControl>
+          <Button
+            onClick={resetFilters}
+            variant="outlined"
+            color="secondary"
+            sx={{
+              borderRadius: "25px",
+              textTransform: "none",
+              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              gap: 1,
+              paddingX: 2,
+              "&:hover": { backgroundColor: "rgba(255, 255, 255, 0.2)" },
+            }}
+          >
+            <RestartAlt />
+            Reset Filters
+          </Button>
+        </Paper>
         {posts.length === 0 && (
-          <Typography variant="h4" sx={{ marginTop: 10 }}>
-            No posts found...<br></br>
-            <br></br> Be the first to post something!
-          </Typography>
+          <Box
+            display="flex"
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            height="50vh"
+            textAlign="center"
+            color="white"
+            sx={{
+              backgroundColor: "rgba(0, 0, 0, 0.3)",
+              borderRadius: "12px",
+            }}
+          >
+            <FlagRounded />
+            <Typography variant="h4" fontWeight="bold" mb={2}>
+              No posts found
+            </Typography>
+            <Typography variant="body1" mb={3}>
+              Be the first to share something!
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={() => navigate("/create-post")}
+              sx={{
+                borderRadius: "25px",
+                textTransform: "none",
+                fontWeight: "bold",
+                paddingX: 3,
+              }}
+            >
+              Create a Post
+            </Button>
+          </Box>
         )}
         <PostsGrid
           posts={posts}
@@ -150,7 +215,17 @@ const PostsPage: React.FC = () => {
             {loading ? "Loading..." : "Load More Posts"}
           </Button>
         )}
-        {!hasMore && posts.length > 0 && <p>No more posts to load.</p>}
+        {!hasMore && posts.length > 4 && (
+          <p
+            style={{
+              color: "black",
+              fontWeight: "bolder",
+              backgroundColor: "rgba(255, 255, 255, 0.5)",
+            }}
+          >
+            No more posts to load.
+          </p>
+        )}
       </Container>
     </Box>
   );

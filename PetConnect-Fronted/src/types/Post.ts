@@ -5,7 +5,7 @@ export type Post = {
     postPicture: string;
     likes: number;
     likedBy: string[];
-    commentsCount: number;
+    commentCount: number;
     owner: {
         _id: string;
         email: string;

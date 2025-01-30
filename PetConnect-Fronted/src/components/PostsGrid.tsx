@@ -30,7 +30,7 @@ const PostsGrid: React.FC<PostsGridProps> = ({
             description={post.description}
             postPicture={post.postPicture ? baseUrl + post.postPicture : null}
             likes={post.likes}
-            commentsCount={post.commentsCount}
+            commentsCount={post.commentCount}
             ownerEmail={post.owner.email}
             likedBy={post.likedBy}
             onClick={(id) => navigate(`/posts/${id}`)}

@@ -53,7 +53,7 @@ beforeAll(async () => {
     expect(response.status).toBe(200);
     const response2 = await request(app).post('/auth/login').send(testUser);
     expect(response2.status).toBe(200);
-    testUser._id = response2.body._id;
+    testUser._id = response2.body.user._id;
     testUser.accessToken = response2.body.accessToken;
     testUser.refreshToken = response2.body.refreshToken;
 });

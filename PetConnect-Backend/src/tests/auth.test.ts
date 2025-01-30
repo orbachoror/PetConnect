@@ -58,7 +58,7 @@ test('Login with exist user', async () => {
     expect(response.status).toBe(200);
     const accessToken = response.body.accessToken;
     const refreshToken = response.body.refreshToken;
-    const _id = response.body._id;
+    const _id = response.body.user._id;
     expect(accessToken).toBeDefined();
     expect(refreshToken).toBeDefined();
     expect(_id).toBeDefined();

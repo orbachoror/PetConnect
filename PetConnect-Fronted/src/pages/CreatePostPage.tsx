@@ -116,7 +116,7 @@ const CreatePostPage: React.FC = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          background: "linear-gradient(to right, rgb(145, 145, 145), #ffffff)",
+          background: "linear-gradient(to right, rgb(228, 220, 220),rgb(255, 251, 251))",
         }}
       >
     <Container maxWidth="sm">

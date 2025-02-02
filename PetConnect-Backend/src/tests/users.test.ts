@@ -114,6 +114,16 @@ test('update user info without image', async () => {
     expect(response.status).toBe(200);
     expect(response.body.name).toBe('newName');
 });
+
+test('update user info without data', async () => {
+    const response2 = await request(app)
+        .put('/user')
+        .set({
+            authorization: "JWT " + testUser.accessToken,
+        });
+    expect(response2.status).not.toBe(200);
+});
+
 test('get user profile picture', async () => {
     logger.info("test user profile picture path = " + testUser.profilePicture);
     const response = await request(app).get(`/${testUser.profilePicture}`);

@@ -96,6 +96,7 @@ test('Create new comment', async () => {
     testComment.postId = response.body.postId;
 
 });
+
 test('Create invalid comment', async () => {
     const response = await request(app)
         .post(`/posts/${testPost._id}/comments`)
@@ -103,18 +104,37 @@ test('Create invalid comment', async () => {
         .send(invalidComment);
     expect(response.status).not.toBe(200);
 });
+
+test('Create comment with invalid post id', async () => {
+    const invalidPostId = "1234567"
+    const response = await request(app)
+        .post(`/posts/${invalidPostId}/comments`)
+        .set({ authorization: "JWT " + testUser.accessToken })
+        .send(testComment);
+    expect(response.status).not.toBe(200);
+});
+
 test('Get all comments by postsId', async () => {
     const response = await request(app)
         .get(`/posts/${testPost._id}/comments`);
     expect(response.status).toBe(200);
     expect(response.body.length).toBe(2);
 });
+
 test('Get all comments by invalid postsId', async () => {
     const invalidPostId = "678734b0078f83eb933bea44"
     const response = await request(app)
         .get(`/posts/${invalidPostId}/comments`);
     expect(response.status).not.toBe(200);
 });
+
+test('Get all comments without postsId', async () => {
+    const invalidPostId = ""
+    const response = await request(app)
+        .get(`/posts/${invalidPostId}/comments`);
+    expect(response.status).not.toBe(200);
+});
+
 test('Update comment', async () => {
     const response = await request(app)
         .put(`/posts/${testPost._id}/comments/${testComment._id}`)

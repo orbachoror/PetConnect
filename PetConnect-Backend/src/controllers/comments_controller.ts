@@ -15,17 +15,7 @@ class CommentsController extends BaseController<IComment> {
         try {
             const postId = req.params.postId;
             logger.info("postId in comments controller " + postId);
-            if (!postId) {
-                logger.error("post ID is required");
-                res.status(400).send("post ID is required");
-                return;
-            }
-            const post = await base_services.getById(Post, postId);
-            if (!post) {
-                logger.error("Cannot find post with id " + postId);
-                res.status(400).send("Cannot find post to comment ");
-                return;
-            }
+            await base_services.getById(Post, postId);
             const { content } = req.body;
             if (!content) {
                 logger.error("content is required in comment ");
@@ -42,20 +32,7 @@ class CommentsController extends BaseController<IComment> {
     async getAll(req: Request, res: Response): Promise<void> {
         try {
             const postId = req.params.postId;
-            if (!postId) {
-                logger.error("post ID is required");
-                res.status(400).send("post ID is required");
-                return;
-            }
-
-
-            const post = await base_services.getById(Post, postId);
-            if (!post) {
-                logger.error("Cannot find post with id " + postId);
-                res.status(400).send("Cannot find post to comment ");
-                return;
-            }
-
+            await base_services.getById(Post, postId);
             req.query = { postId }
             await super.getAll(req, res);
         } catch (err) {

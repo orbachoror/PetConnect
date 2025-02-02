@@ -5,9 +5,8 @@ import { OAuth2Client } from 'google-auth-library';
 const usersUploadPath = 'uploads/users_pictures/';
 import User from '../models/user_model';
 
-
-
 const register = async (req: Request, res: Response) => {
+    
     if (req.file) {
         logger.info('Profile picture uploaded: ' + req.file.filename);
         req.body.profilePicture = `${usersUploadPath}${req.file.filename}`;

@@ -6,12 +6,12 @@
     "start": "tsc && node ./dist/src/server.js",
     "dev": "nodemon ./src/server.ts",
     "lint": "eslint . --ext .ts",
-    "test": "tsc && jest --detectOpenHandles --forceExit",
-    "testAuth": "tsc && jest --runInBand --forceExit --detectOpenHandles auth.test.ts",
-    "testPosts": "tsc && jest --runInBand --forceExit --detectOpenHandles posts.test.ts",
+    "test": "tsc && jest --detectOpenHandles --forceExit  --coverage",
+    "testAuth": "tsc && jest --runInBand --forceExit --detectOpenHandles auth.test.ts --coverage",
+    "testPosts": "tsc && jest --runInBand --forceExit --detectOpenHandles posts.test.ts --coverage",
     "testEvents": "tsc && jest --runInBand --forceExit --detectOpenHandles events.test.ts",
-    "testComments": "tsc && jest --runInBand --forceExit --detectOpenHandles comments.test.ts",
-    "testUsers": "tsc && jest --runInBand --forceExit --detectOpenHandles users.test.ts"
+    "testComments": "tsc && jest --runInBand --forceExit --detectOpenHandles comments.test.ts --coverage",
+    "testUsers": "tsc && jest --runInBand --forceExit --detectOpenHandles users.test.ts --coverage"
   },
   "keywords": [],
   "author": "",

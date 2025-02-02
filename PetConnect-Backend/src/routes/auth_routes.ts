@@ -78,7 +78,6 @@ export default router;
  *         dateOfBirth: "1990-01-01"
  *         refreshTokens:
  *           - "token1"
- *           - "token2"
  */
 
 //***************************************Register******************************************
@@ -93,7 +92,27 @@ export default router;
  *       content:
  *         application/json:
  *           schema:
- *             $ref: '#/components/schemas/User'
+ *             type: object
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: "Bob Smith"
+ *               email:
+ *                 type: string
+ *                 example: "bob@gmail.com"
+ *               password:
+ *                 type: string
+ *                 example: "123456"
+ *               phone:
+ *                 type: string
+ *                 example: "123-456-7890"
+ *               address:
+ *                 type: string
+ *                 example: "123 Main St, Anytown, USA"
+ *               dateOfBirth:
+ *                 type: string
+ *                 format: date
+ *                 example: "1990-01-01"
  *     responses:
  *       200:
  *         description: User successfully registered

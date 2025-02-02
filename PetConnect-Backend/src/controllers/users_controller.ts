@@ -15,17 +15,16 @@ class UsersController extends BaseController<IUser> {
         }
         const id = req.query.userId;
         const updateData = req.body;
-        if (!updateData || !id) {
+        // Object.keys(updateData).length === 0 check if there is no data like !updateData
+        if ( Object.keys(updateData).length === 0|| !id) {
             res.status(400).send("missing data or user id");
             return;
         }
         try {
             const updatedUser = await base_services.updateItem(this.model, id.toString(), updateData);
-            if (updatedUser) {
+            if (updatedUser) 
                 res.status(200).send(updatedUser);
-            } else {
-                res.status(404).send("User not found");
-            }
+            // else --> thrown an error from base_services
         } catch (error) {
             res.status(500).send(error);
         }

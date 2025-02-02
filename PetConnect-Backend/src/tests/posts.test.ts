@@ -230,7 +230,14 @@ test('Like to post with two different users', async () => {
 
 
 test('Delete post with invalid postId', async () => {
-    const response = await request(app).delete('/posts/' + testPost._id + 5).set({
+    const response = await request(app).delete('/posts/' + 5).set({
+        authorization: "JWT " + testUser.accessToken,
+    });
+    expect(response.status).not.toBe(200);
+});
+
+test('Delete post without sending postId', async () => {
+    const response = await request(app).delete('/posts/'+ "").set({
         authorization: "JWT " + testUser.accessToken,
     });
     expect(response.status).not.toBe(200);
@@ -244,7 +251,7 @@ test('Delete post with invalid userId', async () => {
 });
 
 
-test('Delete post by correct postId anf userId', async () => {
+test('Delete post by correct postId and userId', async () => {
     const response = await request(app).delete('/posts/' + testPost._id).set({
         authorization: "JWT " + testUser.accessToken,
     });

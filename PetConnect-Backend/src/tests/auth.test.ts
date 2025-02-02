@@ -5,10 +5,12 @@ import User from '../models/user_model';
 import mongoose from 'mongoose';
 import logger from '../utils/logger';
 
+
 interface UserInfo {
     name: string,
     email: string,
     password: string,
+    profilePicture?: string,
     accessToken?: string,
     refreshToken?: string,
     _id?: string
@@ -24,6 +26,13 @@ const invalidUser: UserInfo = {
     password: ''
 }
 
+const legalUser_NotRegister: UserInfo = {
+    name: 'notRegister',
+    email: 'notRegister',
+    password: 'nicePassword',
+}
+
+
 beforeAll(async () => {
     logger.info("beforeAll");
     await connectToDB();
@@ -35,12 +44,15 @@ afterAll(async () => {
     mongoose.connection.close();
 });
 
+
+//*******************************Register Test**************************************** */
 test('Register new user', async () => {
     const response = await request(app)
         .post('/auth/register')
         .send(testUser);
     expect(response.status).toBe(200);
 });
+
 test('Register user with missing fileds or same email', async () => {
     const invalidUserResponse = await request(app)
         .post('/auth/register')
@@ -51,6 +63,9 @@ test('Register user with missing fileds or same email', async () => {
         .send(testUser);
     expect(existingUserResponse.status).not.toBe(200);
 });
+
+//*******************************Login Tests**************************************** */
+
 test('Login with exist user', async () => {
     const response = await request(app)
         .post('/auth/login')
@@ -66,18 +81,56 @@ test('Login with exist user', async () => {
     testUser.refreshToken = refreshToken;
     testUser._id = _id;
 });
-test('Login with not existent user', async () => {
+test('Login with not legal foramt user and not existent user', async () => {
     const response = await request(app)
         .post('/auth/login')
         .send(invalidUser);
     expect(response.status).not.toBe(200);
 });
+
+test('Login with legal format but not existent user', async () => {
+    const response = await request(app)
+        .post('/auth/login')
+        .send(legalUser_NotRegister);
+    expect(response.status).not.toBe(200);
+});
+
+//*******************************Login gmail Test**************************************** */
+
+test('Login with gmail with correct user but not with gmail', async () => {
+    const response = await request(app)
+        .post('/auth/googleSignIn')
+        .send(testUser);
+    expect(response.status).not.toBe(200);
+});
+
+test('Login with gmail with ilegal user', async () => {
+    const response = await request(app)
+        .post('/auth/googleSignIn')
+        .send(legalUser_NotRegister);
+    expect(response.status).not.toBe(200);
+});
+
+
+//*******************************Logout Test**************************************** */
+
 test('Logout', async () => {
     const response = await request(app)
         .post('/auth/logout')
         .send({ refreshToken: testUser.refreshToken });
     expect(response.status).toBe(200);
 });
+
+test('Logout with not existent user', async () => {
+    const response = await request(app)
+        .post('/auth/logout')
+        .send({ refreshToken: legalUser_NotRegister.refreshToken });
+    expect(response.status).not.toBe(200);
+});
+
+
+//*******************************Refresh Tests**************************************** */
+
 test('Refresh token multiple times valid and invalid', async () => {
     const response = await request(app)
         .post('/auth/login')

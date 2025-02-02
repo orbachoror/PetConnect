@@ -80,7 +80,6 @@ class PostsController extends BaseController<IPost> {
     async toggleLike(req: Request, res: Response): Promise<void> {
         const postId = req.params.postId;
         const userId = req.query.userId?.toString();
-
         if (!userId) {
             logger.error("User not found");
             throw new Error("User not found");
@@ -116,11 +115,8 @@ class PostsController extends BaseController<IPost> {
             throw new Error("Post not found");
         }
         try {
-            const post = await PostModel.deleteOne({ _id: postId });
-            if (post.deletedCount === 0) {
-                logger.error("Post not found");
-                throw new Error("Post not found");
-            }
+            await PostModel.deleteOne({ _id: postId });
+            //if th post is not found it will not throw an error in the catch block
             await CommentModel.deleteMany({ postId: postId });
             res.status(200).json({ messege: "Post deleted successfully" });
 

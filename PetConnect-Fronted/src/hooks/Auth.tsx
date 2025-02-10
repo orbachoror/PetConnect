@@ -17,7 +17,7 @@ interface AuthContextProps {
   isLoading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
-  updateUser: (updatedUser: SenteziedUserType | null) => void;
+  updateUser: (updatedUser: UserType ) => void;
   loginWithGoogle: (credentialResponse: CredentialResponse) => Promise<void>;
 }
 

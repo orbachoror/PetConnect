@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Typography, TextField, Button, Box } from '@mui/material';
+import { Container, Typography, TextField, Button, Box, Alert } from '@mui/material';
 import { useAuth } from '../hooks/Auth';
 import { useNavigate } from 'react-router-dom';
 import { GoogleLogin, CredentialResponse } from '@react-oauth/google';
@@ -10,15 +10,17 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMesssage, setErrorMessage] = useState('');
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setErrorMessage(null);
     try {
       await login(email, password);
       navigate('/');
     } catch (error) {
       console.error('Login failed:', error);
-      alert('Invalid credentials or server error.');
+      setErrorMessage('E');
     }
   };
  

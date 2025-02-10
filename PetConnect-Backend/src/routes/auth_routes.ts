@@ -3,11 +3,7 @@ import express from 'express';
 import { createUploadMiddleware } from '../middleware/image_upload_middleware';
 
 const router = express.Router();
-router.post('/register', createUploadMiddleware("users_pictures"), (req, res, next) => {
-    console.log("Multer processed file:", req.file);
-    console.log("Request body:", req.body);
-    next();
-}, authController.register); 
+router.post('/register', createUploadMiddleware("users_pictures"),authController.register);
 router.post('/login', authController.login);
 router.post('/google', authController.googleSignIn);
 router.post('/logout', authController.logout);

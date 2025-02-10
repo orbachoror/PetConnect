@@ -71,14 +71,17 @@ const PostsPage: React.FC = () => {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
         textAlign: "center",
+        backgroundColor: "#222", 
         backgroundImage: "url('andrew-s-ouo1hbizWwo-unsplash.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundAttachment: "fixed",
         padding: "40px 0",
         position: "relative",
+        opacity: 0, 
+        transition: "opacity 0.5s ease-in-out", 
+        animation: "fadeInBackground 0.8s forwards",
       }}
     >
       <Container sx={{ textAlign: "center" }}>

@@ -9,8 +9,8 @@ export const loginApi = async (email: string, password: string) => {
     return response.data;
 }
 
-export const googleSignIn = async (credentialResponse:CredentialResponse) => {
-    const response = await api.post("/auth/google", {credentialResponse})
+export const googleSignIn = async (credentialResponse: CredentialResponse) => {
+    const response = await api.post("/auth/google", { credentialResponse })
     return response.data;
 }
 

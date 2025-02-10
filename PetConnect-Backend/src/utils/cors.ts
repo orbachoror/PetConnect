@@ -1,5 +1,5 @@
 const corsOptions = {
-    origin: '*', // Allow everyone to access the server - need to change in the future
+    origin: 'https://node65.cs.colman.ac.il', 
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };

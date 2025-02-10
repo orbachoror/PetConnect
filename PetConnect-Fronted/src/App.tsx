@@ -4,7 +4,6 @@ import HomePage from "./pages/Home";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import PostsPage from "./pages/PostsPage";
-import EventsPage from "./pages/Events";
 import { useAuth } from "./hooks/Auth";
 import ProfilePage from "./pages/Profile";
 import CreatePostPage from "./pages/CreatePostPage";
@@ -24,7 +23,6 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/posts" element={<PostsPage />} />
-        <Route path="/events" element={<EventsPage />} />
         <Route
           path="/profile"
           element={

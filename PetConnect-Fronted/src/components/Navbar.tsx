@@ -51,7 +51,6 @@ const NavigationBar: FC = () => {
             <>
               <Box sx={{ display: "flex", gap: 2 }}>
                 <Button to="/create-post">Create Post</Button>
-                <Button to="/Events">Events</Button>
                 <Button to="/Posts">Posts</Button>
                 <Button to="/" onClick={handleLogout}>
                   Logout

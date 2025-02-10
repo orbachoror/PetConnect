@@ -6,12 +6,9 @@ import logger from '../utils/logger';
 export const createUploadMiddleware = (type: string) => {
     const storage = multer.diskStorage({
         destination: function (req, file, cb) {
-            const uploadPath = path.join(process.cwd(), "src/uploads", type);
-            console.log("Upload Path:", uploadPath); // Debugging log
+            const uploadPath = path.join(process.cwd(), "uploads", type);
 
             if (!fs.existsSync(uploadPath)) {
-                console.log("Directory does not exist. Creating:", uploadPath);
-
                 fs.mkdirSync(uploadPath, { recursive: true });
             }
             cb(null, uploadPath);
@@ -23,7 +20,6 @@ export const createUploadMiddleware = (type: string) => {
     })
 
     const fileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
-        console.log("File received by filter:", file);
 
         if (file.mimetype.startsWith('image/')) {
             logger.info("Image file uploaded");

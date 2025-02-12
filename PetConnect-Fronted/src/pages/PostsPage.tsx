@@ -55,7 +55,6 @@ const PostsPage: React.FC = () => {
         )
       );
     } catch (error) {
-      console.error("Failed to toggle like:", error);
       alert("Failed to toggle like. Please try again later.");
     }
   };
@@ -91,8 +90,8 @@ const PostsPage: React.FC = () => {
         <Paper
           elevation={6}
           sx={{
-            backgroundColor: "rgba(255, 255, 255, 0.1)", // Transparent effect
-            backdropFilter: "blur(7px)", // Glassmorphism effect
+            backgroundColor: "rgba(255, 255, 255, 0.1)",
+            backdropFilter: "blur(7px)", 
             padding: 2,
             borderRadius: "12px",
             display: "flex",

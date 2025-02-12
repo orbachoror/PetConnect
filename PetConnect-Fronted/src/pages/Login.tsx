@@ -25,16 +25,13 @@ const Login: React.FC = () => {
  
   const onGoogleLoginSuccess = async (credentialResponse: CredentialResponse) => {
     try{
-      const res= await loginWithGoogle(credentialResponse);
+      await loginWithGoogle(credentialResponse);
       navigate('/');
-      console.log(res);
     }catch(error){
       setErrorMessage('Google login failed');
     }
   };
 
-  const onGoogleLoginError = () => {
-  };
 
   return (
     <Container maxWidth="sm">
@@ -74,7 +71,7 @@ const Login: React.FC = () => {
               display: 'flex',
               justifyContent: 'center',
               }}>
-              <GoogleLogin onSuccess={onGoogleLoginSuccess} onError={onGoogleLoginError}></GoogleLogin>
+              <GoogleLogin onSuccess={onGoogleLoginSuccess}></GoogleLogin>
             </div>
             <Button type="submit" variant="contained" color="primary" fullWidth>
               Login

@@ -154,17 +154,15 @@ const PostPage: React.FC = () => {
       setLoading(true);
       formData.append("title", updatedTitle);
       formData.append("description", updatedDescription);
-      if (updatedImage) {
-        console.log("image update post  = ", updatedImage);
-
+      if (updatedImage) 
         formData.append("image", updatedImage);
-      }
+      
 
       const updatedPost = await updatePost(post._id, formData);
       setPost(updatedPost);
       setEditMode(false);
     } catch (error) {
-      console.error("Failed to update post:", error);
+      alert("Failed to update post.");
     } finally {
       setLoading(false);
     }
@@ -177,19 +175,10 @@ const PostPage: React.FC = () => {
       alert("Post deleted successfully.");
       navigate("/posts");
     } catch (error) {
-      console.error("Failed to delete post:", error);
-    }
+      alert("Failed to delete post.");
+        }
   };
 
-  if (!postId) {
-    return (
-      <Container>
-        <Typography variant="h5" color="error">
-          Invalid Post ID.
-        </Typography>
-      </Container>
-    );
-  }
 
   if (loading) {
     return (
@@ -236,8 +225,8 @@ const PostPage: React.FC = () => {
           <Box
             mt={4}
             sx={{
-              maxWidth: "800px", // Limit width of the post page
-              margin: "0 auto", // Center horizontally
+              maxWidth: "800px", 
+              margin: "0 auto", 
               backgroundColor: "#fff",
               borderRadius: "12px",
               boxShadow: "0 4px 10px rgba(0, 0, 0, 0.1)",

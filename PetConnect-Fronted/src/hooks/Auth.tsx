@@ -27,9 +27,7 @@ export const AuthProvider: FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [currentUser, setCurrentUser] = useState<SenteziedUserType | null>(
-    null
-  );
+  const [currentUser, setCurrentUser] = useState<SenteziedUserType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchCurrentUser = useCallback(async () => {

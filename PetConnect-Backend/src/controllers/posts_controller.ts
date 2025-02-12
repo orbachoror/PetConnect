@@ -85,12 +85,12 @@ class PostsController extends BaseController<IPost> {
         const postId = req.params.postId;
         const userId = req.query.userId?.toString();
 
-        if (!userId) {
-            logger.error("User not found");
-            throw new Error("User not found");
-        }
-
         try {
+
+            if (!userId) {
+                logger.error("User not found");
+                throw new Error("User not found");
+            }
             const post = await PostModel.findById(postId);
             if (!post) {
                 logger.error("Post not found");

@@ -18,17 +18,16 @@ const usePosts = (
         async (pageToFetch: number, reset = false) => {
             setLoading(true);
             try {
-                const data = await getPosts(pageToFetch, sortBy, sortOrder, category, userId);
-                const newPosts = data.data;
+                const postsResponse = await getPosts(pageToFetch, sortBy, sortOrder, category, userId);
+                const newPosts = postsResponse.data;
 
                 // If we reached the last page, set hasMore to false
-                if (data.pagination.currentPage >= data.pagination.totalPages) {
+                if (postsResponse.pagination.currentPage >= postsResponse.pagination.totalPages) {
                     setHasMore(false);
                 }
 
                 setPosts((prevPosts) => (reset ? newPosts : [...prevPosts, ...newPosts]));
             } catch (error) {
-                console.error("Failed to fetch posts with comments:", error);
                 alert("Failed to fetch posts. Please try again later.");
             } finally {
                 setLoading(false);

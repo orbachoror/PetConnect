@@ -20,12 +20,11 @@ import { registerApi } from "../services/authApi";
 const Register: React.FC = () => {
   const navigate = useNavigate();
 
-  // Form state
   const [formData, setFormData] = useState<Record<string, string>>({});
-  const [profilePicture, setProfilePicture] = useState<File | null>(null); // State for profile picture
-  const [preview, setPreview] = useState<string | null>(null); // State for live preview
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null); 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  // Handle input changes
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -90,12 +89,11 @@ const Register: React.FC = () => {
       if (phone) formDataPayload.append("phone", phone);
       if (address) formDataPayload.append("address", address);
       if (dateOfBirth) formDataPayload.append("dateOfBirth", dateOfBirth);
-      if (profilePicture) formDataPayload.append("image", profilePicture); // Attach profile picture
+      if (profilePicture) formDataPayload.append("image", profilePicture); 
 
       await registerApi(formDataPayload);
       navigate("/login");
     } catch (err: any) {
-      console.error("Registration failed:", err);
       setErrors((prevErrors) => ({
         ...prevErrors,
         ["Error"]: err.response?.data?.message,

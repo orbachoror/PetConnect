@@ -10,7 +10,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMesssage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -19,8 +19,7 @@ const Login: React.FC = () => {
       await login(email, password);
       navigate('/');
     } catch (error) {
-      console.error('Login failed:', error);
-      setErrorMessage('E');
+      setErrorMessage('EMAIL or PASSWORD is incorrect');
     }
   };
  
@@ -30,13 +29,11 @@ const Login: React.FC = () => {
       navigate('/');
       console.log(res);
     }catch(error){
-      console.error('Google login failed:', error);
-      alert('Google login failed');
+      setErrorMessage('Google login failed');
     }
   };
 
   const onGoogleLoginError = () => {
-    console.error('Google login error');
   };
 
   return (
@@ -45,6 +42,13 @@ const Login: React.FC = () => {
         <Typography variant="h4" align="center" gutterBottom>
          PetConnect Login
         </Typography>
+        
+        {errorMessage && (
+          <Alert severity="error" sx={{ mb: 2 }}>
+            {errorMessage}
+          </Alert>
+        )}
+        
         <form onSubmit={handleSubmit}>
           <TextField label="Email"
             fullWidth

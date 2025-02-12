@@ -13,7 +13,6 @@ interface RegisterUserParams {
 }
 interface TokenPayload extends JwtPayload {
     _id: string;
-    random: string;
 }
 const register = async ({ name, email, password, ...rest }: RegisterUserParams): Promise<IUser> => {
     const salt = await bcrypt.genSalt(10);
@@ -52,6 +51,7 @@ const logout = async (refreshToken: string) => {
     user.refreshTokens = user.refreshTokens?.filter(token => token !== refreshToken);
     await user.save();
 }
+
 const refresh = async (refreshToken: string) => {
     if (!refreshToken) {
         throw new Error('Refresh token is required');

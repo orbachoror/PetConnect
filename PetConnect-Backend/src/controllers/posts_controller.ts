@@ -19,8 +19,12 @@ class PostsController extends BaseController<IPost> {
             const category = req.query.category as string;
             const sortBy = req.query.sortBy as string;
             const sortOrder = req.query.sortOrder === "asc" ? 1 : -1;
+            const userId = req.query.userId as string;
 
             const filter: any = {};
+            if (userId) {
+                filter.owner = userId;
+            }
             if (category && category !== "All") {
                 filter.category = category;
             }

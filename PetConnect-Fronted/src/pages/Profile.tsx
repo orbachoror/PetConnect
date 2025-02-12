@@ -18,7 +18,6 @@ const Profile: React.FC = () => {
   );
   const userId = localStorage.getItem("userId");
   const { posts, loading,loadMore , hasMore } = usePosts(userId!);
-  console.log("posts", posts);
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [image, setImage] = useState<File | null>(null);

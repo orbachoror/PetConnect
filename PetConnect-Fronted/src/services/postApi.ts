@@ -1,5 +1,5 @@
 import api from "./api";
-export const getPosts = async (page: number, sortBy?: string, sortOrder?: string, category?: string) => {
+export const getPosts = async (page: number, sortBy?: string, sortOrder?: string, category?: string, userId?: string) => {
     const response = await api.get("/posts", {
         params: {
             page,
@@ -7,6 +7,7 @@ export const getPosts = async (page: number, sortBy?: string, sortOrder?: string
             sortBy,
             sortOrder,
             category: category === "All" ? undefined : category,
+            userId,
         }
     });
     return response.data;

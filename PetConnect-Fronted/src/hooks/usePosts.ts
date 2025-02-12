@@ -18,7 +18,7 @@ const usePosts = (
         async (pageToFetch: number, reset = false) => {
             setLoading(true);
             try {
-                const data = await getPosts(pageToFetch, sortBy, sortOrder, category);
+                const data = await getPosts(pageToFetch, sortBy, sortOrder, category, userId);
                 const newPosts = data.data;
 
                 // If we reached the last page, set hasMore to false
@@ -26,11 +26,7 @@ const usePosts = (
                     setHasMore(false);
                 }
 
-                const filteredPosts = userId
-                    ? newPosts.filter((post: Post) => post.owner._id === userId)
-                    : newPosts;
-
-                setPosts((prevPosts) => (reset ? filteredPosts : [...prevPosts, ...filteredPosts]));
+                setPosts((prevPosts) => (reset ? newPosts : [...prevPosts, ...newPosts]));
             } catch (error) {
                 console.error("Failed to fetch posts with comments:", error);
                 alert("Failed to fetch posts. Please try again later.");
